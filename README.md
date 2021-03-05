@@ -1,7 +1,11 @@
-# Obfuscation Detection
+# Obfuscation Detection (v1.0)
+Author: **mr_phrazer**
+
+_Automatically detect control-flow flattening and other state machines_
+
+## Description:
 
 Scripts and binaries to automatically detect control-flow flattening and other state machines in binaries.
-
 
 Implementation is based on Binary Ninja. Check out the following blog post for more information:
 
@@ -34,3 +38,4 @@ $ unzip -P infected samples.zip
 ## Contact
 
 For more information, contact ([@mr_phrazer](https://twitter.com/mr_phrazer)).
+
