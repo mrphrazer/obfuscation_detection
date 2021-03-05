@@ -19,6 +19,13 @@ Function 0x412f70 has a flattening score of 0.9927007299270073.
 Function 0x4138e0 has a flattening score of 0.9629629629629629.
 ```
 
+## Note
+
+The password for the zipped malware samples is "infected". To unpack, use the following command line:
+
+```
+$ unzip -P infected samples.zip
+```
 
 ## Contact
 
