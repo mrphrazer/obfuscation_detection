@@ -1,7 +1,11 @@
 # Obfuscation Detection
 
-Scripts and binaries to automatically detect control-flow flattening as described in the blog post [Automated Detection of Control-flow Flattening
-](https://synthesis.to/2021/03/03/flattening_detection.html).
+Scripts and binaries to automatically detect control-flow flattening and other state machines in binaries.
+
+
+Implementation is based on Binary Ninja. Check out the following blog post for more information:
+
+[Automated Detection of Control-flow Flattening](https://synthesis.to/2021/03/03/flattening_detection.html)
 
 ## Usage
 
