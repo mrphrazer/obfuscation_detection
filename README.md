@@ -37,5 +37,5 @@ $ unzip -P infected samples.zip
 
 ## Contact
 
-For more information, contact ([@mr_phrazer](https://twitter.com/mr_phrazer)).
+For more information, contact [@mr_phrazer](https://twitter.com/mr_phrazer).
 

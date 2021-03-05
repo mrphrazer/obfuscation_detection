@@ -1,7 +1,7 @@
 {
    "pluginmetadataversion": 2,
    "name": "Obfuscation Detection",
-   "author": "mr_phrazer",
+   "author": "Tim Blazytko",
    "type": [
       "helper"
    ],
@@ -9,10 +9,10 @@
       "python3"
    ],
    "description": "Automatically detect control-flow flattening and other state machines",
-   "longdescription": "Scripts and binaries to automatically detect control-flow flattening and other state machines in binaries.\n\nImplementation is based on Binary Ninja. Check out the following blog post for more information:\n\n[Automated Detection of Control-flow Flattening](https://synthesis.to/2021/03/03/flattening_detection.html)\n\n## Usage\n\n```\n$ ./detect_flattening.py samples/finspy \nFunction 0x401602 has a flattening score of 0.9473684210526315.\nFunction 0x4017c0 has a flattening score of 0.9981378026070763.\nFunction 0x405150 has a flattening score of 0.9166666666666666.\nFunction 0x405270 has a flattening score of 0.9166666666666666.\nFunction 0x405370 has a flattening score of 0.9984544049459042.\nFunction 0x4097a0 has a flattening score of 0.9992378048780488.\nFunction 0x412c70 has a flattening score of 0.9629629629629629.\nFunction 0x412df0 has a flattening score of 0.9629629629629629.\nFunction 0x412f70 has a flattening score of 0.9927007299270073.\nFunction 0x4138e0 has a flattening score of 0.9629629629629629.\n```\n\n\n## Contact\n\nFor more information, contact ([@mr_phrazer](https://twitter.com/mr_phrazer)).\n",
+   "longdescription": "Scripts and binaries to automatically detect control-flow flattening and other state machines in binaries.\n\nImplementation is based on Binary Ninja. Check out the following blog post for more information:\n\n[Automated Detection of Control-flow Flattening](https://synthesis.to/2021/03/03/flattening_detection.html)\n\n## Usage\n\n```\n$ ./detect_flattening.py samples/finspy \nFunction 0x401602 has a flattening score of 0.9473684210526315.\nFunction 0x4017c0 has a flattening score of 0.9981378026070763.\nFunction 0x405150 has a flattening score of 0.9166666666666666.\nFunction 0x405270 has a flattening score of 0.9166666666666666.\nFunction 0x405370 has a flattening score of 0.9984544049459042.\nFunction 0x4097a0 has a flattening score of 0.9992378048780488.\nFunction 0x412c70 has a flattening score of 0.9629629629629629.\nFunction 0x412df0 has a flattening score of 0.9629629629629629.\nFunction 0x412f70 has a flattening score of 0.9927007299270073.\nFunction 0x4138e0 has a flattening score of 0.9629629629629629.\n```\n\n\n## Contact\n\nFor more information, contact [@mr_phrazer](https://twitter.com/mr_phrazer).\n",
    "license": {
       "name": "GPL-2.0",
-      "text": "Copyright 2021 mr_phrazer\n\nThis program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>."
+      "text": "Copyright 2021 Tim Blazytko\n\nThis program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>."
    },
    "platforms": [
       "Darwin",
