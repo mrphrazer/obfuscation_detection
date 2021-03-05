@@ -1,5 +1,5 @@
 # Obfuscation Detection (v1.0)
-Author: **mr_phrazer**
+Author: **Tim Blazytko**
 
 _Automatically detect control-flow flattening and other state machines_
 
