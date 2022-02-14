@@ -1,4 +1,4 @@
-# Obfuscation Detection (v1.2)
+# Obfuscation Detection (v1.3)
 Author: **Tim Blazytko**
 
 _Automatically detect obfuscated code and other state machines_
