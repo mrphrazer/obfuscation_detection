@@ -1,5 +1,4 @@
-import math
-
+from math import ceil
 from binaryninja import highlight
 from obfuscation_detection.utils import *
 
@@ -24,31 +23,21 @@ def find_flattened_functions(bv):
 def find_complex_functions(bv):
     print("=" * 80)
     print("Cyclomatic Complexity")
-    # sort functions by cyclomatic complexity
-    sorted_functions = sorted(
-        bv.functions, key=lambda x: calc_cyclomatic_complexity(x))
 
-    # bound to print only the top 10%
-    bound = math.ceil(((len(bv.functions) * 10) / 100))
     # print top 10% (iterate in descending order)
-    for f in list(reversed(sorted_functions))[:bound]:
+    for f, score in get_top_10_functions(bv.functions, calc_cyclomatic_complexity):
         print(
-            f"Function {hex(f.start)} ({f.name}) has a cyclomatic complexity of {calc_cyclomatic_complexity(f)}.")
+            f"Function {hex(f.start)} ({f.name}) has a cyclomatic complexity of {score}.")
 
 
 def find_large_basic_blocks(bv):
     print("=" * 80)
     print("Large Basic Blocks")
-    # sort functions by average basic block size
-    sorted_functions = sorted(
-        bv.functions, key=lambda x: calc_average_instructions_per_block(x))
 
-    # bound to print only the top 10%
-    bound = math.ceil(((len(bv.functions) * 10) / 100))
     # print top 10% (iterate in descending order)
-    for f in list(reversed(sorted_functions))[:bound]:
+    for f, score in get_top_10_functions(bv.functions, calc_average_instructions_per_block):
         print(
-            f"Basic blocks in function {hex(f.start)} ({f.name}) contain on average {math.ceil(calc_average_instructions_per_block(f))} instructions.")
+            f"Basic blocks in function {hex(f.start)} ({f.name}) contain on average {ceil(score)} instructions.")
 
 
 def find_instruction_overlapping(bv):
