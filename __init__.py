@@ -17,3 +17,6 @@ PluginCommand.register("Obfuscation Detection\\Large Basic Blocks",
 
 PluginCommand.register("Obfuscation Detection\\Instruction Overlapping",
                        "Heuristic to detect instruction overlapping", heuristics.find_instruction_overlapping)
+
+PluginCommand.register("Obfuscation Detection\\Uncommon Instruction Sequences",
+                       "Heuristic to detect uncommon instruction sequences", heuristics.find_uncommon_instruction_sequences)

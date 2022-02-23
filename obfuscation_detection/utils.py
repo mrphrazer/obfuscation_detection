@@ -1,6 +1,8 @@
 from collections import Counter
 from math import ceil
 
+from obfuscation_detection.ngrams import MOST_COMMON_3GRAMS
+
 
 def calc_flattening_score(function):
     score = 0.0
@@ -47,6 +49,49 @@ def calc_average_instructions_per_block(function):
     num_instructions = sum(
         (b.instruction_count for b in function.basic_blocks))
     return num_instructions / num_blocks
+
+
+def sliding_window(l, window_size):
+    # yiels all sliding windows of size `window_size` for a given list
+    for index in range(len(l) - window_size + 1):
+        yield l[index:index + window_size]
+
+
+def calc_ngrams(function, n):
+    def get_opcode(instruction):
+        # ensure instruction has opcode
+        if len(instruction) == 0 or len(instruction[0]) == 0:
+            return ""
+        return str(instruction[0][0]).replace(" ", "")
+    # fetch instruction opcodes sorted by the instructions' address
+    opcodes_sorted = [get_opcode(instruction) for instruction in sorted(
+        function.instructions, key=lambda x: int(x[1]))]
+    # calculate all n-grams
+    grams_n = Counter(["".join(w) for w in sliding_window(opcodes_sorted, n)])
+    return grams_n
+
+
+def calc_global_ngrams(bv, n):
+    # compute instruction ngrams of all functions
+    global_grams_n = Counter()
+    for f in bv.functions:
+        # join function ngrams in glocal Counter
+        global_grams_n.update(calc_ngrams(f, n))
+    return global_grams_n
+
+
+def calc_uncommon_instruction_sequences_score(function):
+    # calculate all 3-grams in the function
+    function_ngrams = calc_ngrams(function, 3)
+    # heuristic to avoid overfitting to small function stubs
+    if function_ngrams.total() < 5:
+        return 0.0
+    # count the number of ngrams in the function which are not in MOST_COMMON_3GRAMS
+    count = sum((value for gram, value in function_ngrams.items()
+                if gram not in MOST_COMMON_3GRAMS))
+    # average relative to the amount of ngrams in the functions
+    score = count / function_ngrams.total()
+    return score
 
 
 def get_top_10_functions(functions, scoring_function):

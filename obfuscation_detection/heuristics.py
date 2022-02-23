@@ -1,5 +1,7 @@
 from math import ceil
+
 from binaryninja import highlight
+
 from obfuscation_detection.utils import *
 
 
@@ -80,3 +82,13 @@ def find_instruction_overlapping(bv):
     for address in sorted(functions_with_overlapping):
         print(
             f"Overlapping instructions in function {hex(address)} ({bv.get_function_at(address).name}).")
+
+
+def find_uncommon_instruction_sequences(bv):
+    print("=" * 80)
+    print("Uncommon Instruction Sequences")
+
+    # print top 10% (iterate in descending order)
+    for f, score in get_top_10_functions(bv.functions, calc_uncommon_instruction_sequences_score):
+        print(
+            f"Function {hex(f.start)} ({f.name}) has an uncommon instruction sequences score of {score}.")

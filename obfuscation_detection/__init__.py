@@ -13,3 +13,6 @@ def detect_obfuscation(bv):
 
     # find overlapping instructions
     find_instruction_overlapping(bv)
+
+    # find uncommon instruction sequences
+    find_uncommon_instruction_sequences(bv)
