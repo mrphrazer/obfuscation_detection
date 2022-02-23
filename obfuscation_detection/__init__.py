@@ -11,8 +11,8 @@ def detect_obfuscation(bv):
     # find large basic blocks
     find_large_basic_blocks(bv)
 
-    # find overlapping instructions
-    find_instruction_overlapping(bv)
-
     # find uncommon instruction sequences
     find_uncommon_instruction_sequences(bv)
+
+    # find overlapping instructions
+    find_instruction_overlapping(bv)

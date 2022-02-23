@@ -2,7 +2,7 @@ from math import ceil
 
 from binaryninja import highlight
 
-from obfuscation_detection.utils import *
+from .utils import *
 
 
 def find_flattened_functions(bv):

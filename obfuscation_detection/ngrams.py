@@ -1,5 +1,3 @@
-from collections import Counter
-
 # 1k most common 3-grams of x86_64
 MOST_COMMON_3GRAMS = {'addaddadd',
                       'addaddcmp',

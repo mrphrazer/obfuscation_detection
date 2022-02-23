@@ -1,7 +1,7 @@
 from collections import Counter
 from math import ceil
 
-from obfuscation_detection.ngrams import MOST_COMMON_3GRAMS
+from .ngrams import MOST_COMMON_3GRAMS
 
 
 def calc_flattening_score(function):
