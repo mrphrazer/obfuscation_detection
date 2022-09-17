@@ -12,12 +12,28 @@ Implementation is based on Binary Ninja. Check out the following blog posts for 
 * [Automated Detection of Control-flow Flattening](https://synthesis.to/2021/03/03/flattening_detection.html)
 * [Automated Detection of Obfuscated Code](https://synthesis.to/2021/08/10/obfuscation_detection.html)
 
+
+## Installation
+
+The tool can be installed using Binary Ninja's plugin manager.
+
+For the headless version, follow these steps:
+
+```
+git clone https://github.com/mrphrazer/obfuscation_detection.git
+cd obfuscation_detection
+
+# install obfuscation_detection
+pip install .
+```
+
+
 ## Usage
 
 To detect control-flow flattening, run `detect_flattening.py`:
 
 ```
-$ ./detect_flattening.py samples/finspy 
+$ scripts/detect_flattening.py samples/finspy 
 Function 0x401602 has a flattening score of 0.9473684210526315.
 Function 0x4017c0 has a flattening score of 0.9981378026070763.
 Function 0x405150 has a flattening score of 0.9166666666666666.
@@ -33,7 +49,7 @@ Function 0x4138e0 has a flattening score of 0.9629629629629629.
 To apply various heuristics to detect obfuscated code, run `detect_obfuscation.py`:
 
 ```
-$ ./detect_obfuscation.py samples/finspy 
+$ scripts/detect_obfuscation.py samples/finspy 
 ================================================================================
 Control Flow Flattening
 Function 0x401602 (sub_401602) has a flattening score of 0.9473684210526315.
