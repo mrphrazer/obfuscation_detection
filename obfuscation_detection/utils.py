@@ -84,13 +84,13 @@ def calc_uncommon_instruction_sequences_score(function):
     # calculate all 3-grams in the function
     function_ngrams = calc_ngrams(function, 3)
     # heuristic to avoid overfitting to small function stubs
-    if function_ngrams.total() < 5:
+    if sum(function_ngrams.values()) < 5:
         return 0.0
     # count the number of ngrams in the function which are not in MOST_COMMON_3GRAMS
     count = sum((value for gram, value in function_ngrams.items()
                 if gram not in MOST_COMMON_3GRAMS))
     # average relative to the amount of ngrams in the functions
-    score = count / function_ngrams.total()
+    score = count / sum(function_ngrams.values())
     return score
 
 
