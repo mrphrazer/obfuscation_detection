@@ -3,7 +3,7 @@ from math import ceil
 
 from binaryninja.enums import LowLevelILOperation
 
-from .ngrams import MOST_COMMON_3GRAMS
+from .ngrams import determine_ngram_database
 
 
 def calc_flattening_score(function):
@@ -16,7 +16,7 @@ def calc_flattening_score(function):
         if not any((edge.source in dominated for edge in block.incoming_edges)):
             continue
         # 4: calculate relation of dominated blocks to the blocks in the graph
-        score = max(score, len(dominated)/len(function.basic_blocks))
+        score = max(score, len(dominated) / len(function.basic_blocks))
     return score
 
 
@@ -73,7 +73,8 @@ def calc_ngrams(function, n, use_llil=True):
         # for register assignments, check opcode
         if instr.operation == LowLevelILOperation.LLIL_SET_REG:
             # return LLIL_SET_REG is RHS is a constant or register (terminal)
-            if instr.src.operation in [LowLevelILOperation.LLIL_CONST, LowLevelILOperation.LLIL_CONST_PTR, LowLevelILOperation.LLIL_REG]:
+            if instr.src.operation in [LowLevelILOperation.LLIL_CONST, LowLevelILOperation.LLIL_CONST_PTR,
+                                       LowLevelILOperation.LLIL_REG]:
                 return str(instr.operation)
             # return operator of RHS
             return str(instr.src.operation)
@@ -98,24 +99,26 @@ def calc_ngrams(function, n, use_llil=True):
     return grams_n
 
 
-def calc_global_ngrams(bv, n):
+def calc_global_ngrams(bv, n, use_llil):
     # compute instruction ngrams of all functions
     global_grams_n = Counter()
     for f in bv.functions:
-        # join function ngrams in glocal Counter
-        global_grams_n.update(calc_ngrams(f, n))
+        # join function ngrams in global Counter
+        global_grams_n.update(calc_ngrams(f, n, use_llil=use_llil))
     return global_grams_n
 
 
 def calc_uncommon_instruction_sequences_score(function):
+    # determine ngram database based on function's architecture
+    use_llil, ngram_database = determine_ngram_database(function.arch)
     # calculate all 3-grams in the function
-    function_ngrams = calc_ngrams(function, 3)
+    function_ngrams = calc_ngrams(function, 3, use_llil=use_llil)
     # heuristic to avoid overfitting to small function stubs
     if sum(function_ngrams.values()) < 5:
         return 0.0
     # count the number of ngrams in the function which are not in MOST_COMMON_3GRAMS
     count = sum((value for gram, value in function_ngrams.items()
-                if gram not in MOST_COMMON_3GRAMS))
+                 if gram not in ngram_database))
     # average relative to the amount of ngrams in the functions
     score = count / sum(function_ngrams.values())
     return score
@@ -124,7 +127,7 @@ def calc_uncommon_instruction_sequences_score(function):
 def get_top_10_functions(functions, scoring_function):
     # sort functions by scoring function
     sorted_functions = sorted(((f, scoring_function(f))
-                              for f in functions), key=lambda x: x[1])
+                               for f in functions), key=lambda x: x[1])
     # bound to locate the top 10%
     bound = bound = ceil(((len(functions) * 10) / 100))
     # yield top 10% (iterate in descending order)

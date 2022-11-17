@@ -1,3 +1,13 @@
+
+def determine_ngram_database(arch):
+    if arch.name == "x86_64":
+        raise NotImplementedError()
+    elif arch.name == "x86":
+        raise NotImplementedError()
+    else:
+        return True, MOST_COMMON_3GRAMS
+
+
 # 3k most common LLIL 3-grams based on x86, x86_64, ARM32 and ARM64 samples
 MOST_COMMON_3GRAMS = {
     'LowLevelILOperation.LLIL_ADCLowLevelILOperation.LLIL_ANDLowLevelILOperation.LLIL_SET_FLAG',
