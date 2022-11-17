@@ -1,6 +1,8 @@
 from collections import Counter
 from math import ceil
 
+from binaryninja.enums import LowLevelILOperation
+
 from .ngrams import MOST_COMMON_3GRAMS
 
 
@@ -57,15 +59,40 @@ def sliding_window(l, window_size):
         yield l[index:index + window_size]
 
 
-def calc_ngrams(function, n):
-    def get_opcode(instruction):
+def calc_ngrams(function, n, use_llil=True):
+    def get_opcode_from_disassembly(instruction):
+        """Return the opcode of an assembly instruction"""
         # ensure instruction has opcode
         if len(instruction) == 0 or len(instruction[0]) == 0:
             return ""
+        # return instruction mnemomic
         return str(instruction[0][0]).replace(" ", "")
-    # fetch instruction opcodes sorted by the instructions' address
-    opcodes_sorted = [get_opcode(instruction) for instruction in sorted(
-        function.instructions, key=lambda x: int(x[1]))]
+
+    def get_opcode_from_llil(instr):
+        """Returns the opcode of an LLIL instruction"""
+        # for register assignments, check opcode
+        if instr.operation == LowLevelILOperation.LLIL_SET_REG:
+            # return LLIL_SET_REG is RHS is a constant or register (terminal)
+            if instr.src.operation in [LowLevelILOperation.LLIL_CONST, LowLevelILOperation.LLIL_CONST_PTR, LowLevelILOperation.LLIL_REG]:
+                return str(instr.operation)
+            # return operator of RHS
+            return str(instr.src.operation)
+        return str(instr.operation)
+
+    # if function too complex, return empty counter
+    if function.analysis_skipped:
+        return Counter()
+
+    # count opcodes either on LLIL or assembly level
+    if use_llil:
+        # fetch llil opcodes sorted by the instructions' address
+        opcodes_sorted = [get_opcode_from_llil(instruction) for instruction in sorted(
+            function.llil_instructions, key=lambda x: int(x.address))]
+    else:
+        # fetch instruction opcodes sorted by the instructions' address
+        opcodes_sorted = [get_opcode_from_disassembly(instruction) for instruction in sorted(
+            function.instructions, key=lambda x: int(x[1]))]
+
     # calculate all n-grams
     grams_n = Counter(["".join(w) for w in sliding_window(opcodes_sorted, n)])
     return grams_n
