@@ -59,7 +59,7 @@ def sliding_window(l, window_size):
         yield l[index:index + window_size]
 
 
-def calc_ngrams(function, n, use_llil=True):
+def calc_ngrams(function, n, use_llil):
     def get_opcode_from_disassembly(instruction):
         """Return the opcode of an assembly instruction"""
         # ensure instruction has opcode
