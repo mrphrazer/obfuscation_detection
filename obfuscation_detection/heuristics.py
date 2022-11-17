@@ -1,5 +1,3 @@
-from math import ceil
-
 from binaryninja import highlight
 
 from .utils import *
