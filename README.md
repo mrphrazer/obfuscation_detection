@@ -1,16 +1,17 @@
-# Obfuscation Detection (v1.4)
+# Obfuscation Detection (v1.5)
 Author: **Tim Blazytko**
 
 _Automatically detect obfuscated code and other state machines_
 
 ## Description:
 
-Scripts and binaries to automatically detect obfuscated code and state machines in binaries.
+Scripts, binaries and a Binary Ninja plugin to automatically detect obfuscated code and state machines in binaries.
 
 Implementation is based on Binary Ninja. Check out the following blog posts for more information:
 
 * [Automated Detection of Control-flow Flattening](https://synthesis.to/2021/03/03/flattening_detection.html)
 * [Automated Detection of Obfuscated Code](https://synthesis.to/2021/08/10/obfuscation_detection.html)
+* [Statistical Analysis to Detect Uncommon Code](https://synthesis.to//2023/01/26/uncommon_instruction_sequences.html)
 
 
 ## Installation
@@ -70,6 +71,9 @@ Function 0x4017c0 (sub_4017c0) has a cyclomatic complexity of 214.
 Function 0x412f70 (sub_412f70) has a cyclomatic complexity of 54.
 Function 0x4138e0 (sub_4138e0) has a cyclomatic complexity of 10.
 Function 0x412df0 (sub_412df0) has a cyclomatic complexity of 10.
+Function 0x412c70 (sub_412c70) has a cyclomatic complexity of 10.
+Function 0x401602 (sub_401602) has a cyclomatic complexity of 7.
+Function 0x4013e3 (sub_4013e3) has a cyclomatic complexity of 5.
 ================================================================================
 Large Basic Blocks
 Basic blocks in function 0x405340 (sub_405340) contain on average 11 instructions.
@@ -78,6 +82,20 @@ Basic blocks in function 0x4013e3 (sub_4013e3) contain on average 10 instruction
 Basic blocks in function 0x413a80 (init) contain on average 9 instructions.
 Basic blocks in function 0x401349 (sub_401349) contain on average 7 instructions.
 Basic blocks in function 0x401030 (_init) contain on average 6 instructions.
+Basic blocks in function 0x4097a0 (sub_4097a0) contain on average 6 instructions.
+Basic blocks in function 0x405150 (sub_405150) contain on average 6 instructions.
+Basic blocks in function 0x4017c0 (sub_4017c0) contain on average 6 instructions.
+================================================================================
+Uncommon Instruction Sequences
+Function 0x401300 (sub_401300) has an uncommon instruction sequences score of 0.5.
+Function 0x405370 (sub_405370) has an uncommon instruction sequences score of 0.4697142857142857.
+Function 0x4016fa (sub_4016fa) has an uncommon instruction sequences score of 0.4444444444444444.
+Function 0x4097a0 (sub_4097a0) has an uncommon instruction sequences score of 0.42799688635184224.
+Function 0x4017c0 (sub_4017c0) has an uncommon instruction sequences score of 0.42788461538461536.
+Function 0x412df0 (sub_412df0) has an uncommon instruction sequences score of 0.35294117647058826.
+Function 0x412c70 (sub_412c70) has an uncommon instruction sequences score of 0.35294117647058826.
+Function 0x412f70 (sub_412f70) has an uncommon instruction sequences score of 0.352.
+Function 0x401290 (__ns_get32) has an uncommon instruction sequences score of 0.34782608695652173.
 ================================================================================
 Instruction Overlapping
 ```
