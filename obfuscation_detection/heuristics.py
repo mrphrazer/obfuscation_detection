@@ -44,38 +44,42 @@ def find_instruction_overlapping(bv):
     print("=" * 80)
     print("Instruction Overlapping")
 
-    # set of addresses
+    # sets of addresses
     seen = {}
-
+    overlapping_addresses = set()
     functions_with_overlapping = set()
 
-    # walk over all functions
-    for function in bv.functions:
-        # walk over all instructions
-        for instruction in function.instructions:
-            # parse address
-            address = instruction[-1]
+    # walk over all instructions
+    for instruction in bv.instructions:
+        # parse address
+        address = instruction[-1]
 
-            # seen for the first time
-            if address not in seen:
-                # mark as instruction beginning
-                seen[address] = 1
-            # seen before and not marked as instruction beginning
-            elif seen[address] == 0:
-                functions_with_overlapping.add(function.start)
-                function.set_user_instr_highlight(
-                    address, highlight.HighlightColor(red=0xff, blue=0xff, green=0))
+        # seen for the first time
+        if address not in seen:
+            # mark as instruction beginning
+            seen[address] = 1
+        # seen before and not marked as instruction beginning
+        elif seen[address] == 0:
+            overlapping_addresses.add(address)
 
-            # walk over instruction length and mark bytes as seen
-            for _ in range(1, bv.get_instruction_length(address)):
-                address += 1
-                # if seen before and marked as instruction beginning
-                if address in seen and seen[address] == 1:
-                    functions_with_overlapping.add(function.start)
-                    function.set_user_instr_highlight(
-                        address, highlight.HighlightColor(red=0xff, blue=0xff, green=0))
-                else:
-                    seen[address] = 0
+        # walk over instruction length and mark bytes as seen
+        for _ in range(1, bv.get_instruction_length(address)):
+            address += 1
+            # if seen before and marked as instruction beginning
+            if address in seen and seen[address] == 1:
+                overlapping_addresses.add(address)
+            else:
+                seen[address] = 0
+
+    # walk over all overlapping addresses
+    for address in overlapping_addresses:
+        # walk over all functions containing the address
+        for function in bv.get_functions_containing(address):
+            # highlight overlapping instruction
+            function.set_user_instr_highlight(
+                address, highlight.HighlightColor(red=0xff, blue=0xff, green=0))
+            # add to set of overlapping functions
+            functions_with_overlapping.add(function.start)
 
     for address in sorted(functions_with_overlapping):
         print(
