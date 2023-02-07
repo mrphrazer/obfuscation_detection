@@ -1,4 +1,52 @@
+from binaryninja.plugin import BackgroundTaskThread
+
 from .heuristics import *
+
+
+class BGTask(BackgroundTaskThread):
+    def __init__(self, bv, msg, f):
+        BackgroundTaskThread.__init__(self, msg, True)
+        self.f = f
+        self.bv = bv
+
+    def run(self):
+        self.f(self.bv)
+
+
+def find_flattened_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding flattened functions", find_flattened_functions)
+    background_task.start()
+
+
+def find_complex_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding complex functions", find_complex_functions)
+    background_task.start()
+
+
+def find_large_basic_blocks_bg(bv):
+    background_task = BGTask(
+        bv, "Finding large basic blocks", find_large_basic_blocks)
+    background_task.start()
+
+
+def find_uncommon_instruction_sequences_bg(bv):
+    background_task = BGTask(
+        bv, "Finding uncomming instruction sequences", find_uncommon_instruction_sequences)
+    background_task.start()
+
+
+def find_instruction_overlapping_bg(bv):
+    background_task = BGTask(
+        bv, "Finding instruction overlapping", find_instruction_overlapping)
+    background_task.start()
+
+
+def detect_obfuscation_bg(bv):
+    background_task = BGTask(
+        bv, "Detecting obfuscated functions", detect_obfuscation)
+    background_task.start()
 
 
 def detect_obfuscation(bv):
