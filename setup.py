@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="obfuscation_detection",
-    version="1.5",
+    version="1.6",
     author="Tim Blazytko",
     author_email="tim@blazytko.to",
     description="Collection of scripts to pinpoint obfuscated code",
