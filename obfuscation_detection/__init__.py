@@ -43,6 +43,12 @@ def find_instruction_overlapping_bg(bv):
     background_task.start()
 
 
+def find_most_called_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding most called functions", find_most_called_functions)
+    background_task.start()
+
+
 def detect_obfuscation_bg(bv):
     background_task = BGTask(
         bv, "Detecting obfuscated functions", detect_obfuscation)
@@ -64,3 +70,6 @@ def detect_obfuscation(bv):
 
     # find overlapping instructions
     find_instruction_overlapping(bv)
+
+    # find most-called functions
+    find_most_called_functions(bv)

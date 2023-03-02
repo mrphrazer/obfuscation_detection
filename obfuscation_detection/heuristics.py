@@ -94,3 +94,13 @@ def find_uncommon_instruction_sequences(bv):
     for f, score in get_top_10_functions(bv.functions, calc_uncommon_instruction_sequences_score):
         print(
             f"Function {hex(f.start)} ({f.name}) has an uncommon instruction sequences score of {score}.")
+
+
+def find_most_called_functions(bv):
+    print("=" * 80)
+    print("Most Called Functions")
+
+    # print top 10% (iterate in descending order)
+    for f, score in get_top_10_functions(bv.functions, lambda f: len(f.callers)):
+        print(
+            f"Function {hex(f.start)} ({f.name}) is called from {score} different functions.")

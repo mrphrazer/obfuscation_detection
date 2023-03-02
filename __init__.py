@@ -5,6 +5,7 @@ from .obfuscation_detection import (detect_obfuscation_bg,
                                     find_flattened_functions_bg,
                                     find_instruction_overlapping_bg,
                                     find_large_basic_blocks_bg,
+                                    find_most_called_functions_bg,
                                     find_uncommon_instruction_sequences_bg)
 
 PluginCommand.register("Obfuscation Detection\\All",
@@ -24,3 +25,6 @@ PluginCommand.register("Obfuscation Detection\\Instruction Overlapping",
 
 PluginCommand.register("Obfuscation Detection\\Uncommon Instruction Sequences",
                        "Heuristic to detect uncommon instruction sequences", find_uncommon_instruction_sequences_bg)
+
+PluginCommand.register("Obfuscation Detection\\Most Called Functions",
+                       "Detects the most called functions", find_most_called_functions_bg)
