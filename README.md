@@ -68,58 +68,8 @@ By clicking on the identified function addresses, Binary Ninja navigates to the 
 
 ### Headless
 
-To use the plugin in headless mode, run `scripts/detect_obfuscation.py`:
+To use the plugin in headless mode, run `scripts/detect_obfuscation.py`.
 
-```
-$ scripts/detect_obfuscation.py   samples/finspy 
-================================================================================
-Control Flow Flattening
-Function 0x401602 (sub_401602) has a flattening score of 0.9473684210526315.
-Function 0x4017c0 (sub_4017c0) has a flattening score of 0.9981378026070763.
-Function 0x405150 (sub_405150) has a flattening score of 0.9166666666666666.
-Function 0x405270 (sub_405270) has a flattening score of 0.9166666666666666.
-Function 0x405370 (sub_405370) has a flattening score of 0.9984544049459042.
-Function 0x4097a0 (sub_4097a0) has a flattening score of 0.9992378048780488.
-Function 0x412c70 (sub_412c70) has a flattening score of 0.9629629629629629.
-Function 0x412df0 (sub_412df0) has a flattening score of 0.9629629629629629.
-Function 0x412f70 (sub_412f70) has a flattening score of 0.9927007299270073.
-Function 0x4138e0 (sub_4138e0) has a flattening score of 0.9629629629629629.
-================================================================================
-Cyclomatic Complexity
-Function 0x4097a0 (sub_4097a0) has a cyclomatic complexity of 524.
-Function 0x405370 (sub_405370) has a cyclomatic complexity of 258.
-Function 0x4017c0 (sub_4017c0) has a cyclomatic complexity of 214.
-Function 0x412f70 (sub_412f70) has a cyclomatic complexity of 54.
-Function 0x4138e0 (sub_4138e0) has a cyclomatic complexity of 10.
-Function 0x412df0 (sub_412df0) has a cyclomatic complexity of 10.
-Function 0x412c70 (sub_412c70) has a cyclomatic complexity of 10.
-Function 0x401602 (sub_401602) has a cyclomatic complexity of 7.
-Function 0x4013e3 (sub_4013e3) has a cyclomatic complexity of 5.
-================================================================================
-Large Basic Blocks
-Basic blocks in function 0x405340 (sub_405340) contain on average 11 instructions.
-Basic blocks in function 0x401240 (_start) contain on average 11 instructions.
-Basic blocks in function 0x4013e3 (sub_4013e3) contain on average 10 instructions.
-Basic blocks in function 0x413a80 (init) contain on average 9 instructions.
-Basic blocks in function 0x401349 (sub_401349) contain on average 7 instructions.
-Basic blocks in function 0x401030 (_init) contain on average 6 instructions.
-Basic blocks in function 0x4097a0 (sub_4097a0) contain on average 6 instructions.
-Basic blocks in function 0x405150 (sub_405150) contain on average 6 instructions.
-Basic blocks in function 0x4017c0 (sub_4017c0) contain on average 6 instructions.
-================================================================================
-Uncommon Instruction Sequences
-Function 0x401300 (sub_401300) has an uncommon instruction sequences score of 0.5.
-Function 0x405370 (sub_405370) has an uncommon instruction sequences score of 0.4697142857142857.
-Function 0x4016fa (sub_4016fa) has an uncommon instruction sequences score of 0.4444444444444444.
-Function 0x4097a0 (sub_4097a0) has an uncommon instruction sequences score of 0.42799688635184224.
-Function 0x4017c0 (sub_4017c0) has an uncommon instruction sequences score of 0.42788461538461536.
-Function 0x412df0 (sub_412df0) has an uncommon instruction sequences score of 0.35294117647058826.
-Function 0x412c70 (sub_412c70) has an uncommon instruction sequences score of 0.35294117647058826.
-Function 0x412f70 (sub_412f70) has an uncommon instruction sequences score of 0.352.
-Function 0x401290 (__ns_get32) has an uncommon instruction sequences score of 0.34782608695652173.
-================================================================================
-Instruction Overlapping
-```
 
 ## Detection Heuristics
 
