@@ -6,6 +6,10 @@ from .utils import *
 def find_flattened_functions(bv):
     print("=" * 80)
     print("Control Flow Flattening")
+
+    # set of (function, score) tuples
+    flattening_results = set()
+
     # walk over all functions
     for function in bv.functions:
         # calculate flattening score
@@ -15,7 +19,11 @@ def find_flattened_functions(bv):
             # print(f"Function {hex(function.start)} has a flattening score of {score}.")
             continue
 
-        # print function and score
+        # add to set
+        flattening_results.add((function, score))
+
+    # print function and scores in descending order
+    for function, score in reversed(sorted(flattening_results, key=lambda x: x[1])):
         print(
             f"Function {hex(function.start)} ({function.name}) has a flattening score of {score}.")
 
