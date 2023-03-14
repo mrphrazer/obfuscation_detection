@@ -53,11 +53,15 @@ The plugin can be used in the user interface and in headless mode.
 
 Choose the index tab `Plugins -> Obfuscation Detection` to run one or more detection heuristics in Binary Ninja's user interface:
 
-[img]
+<p align="center">
+<img alt="Plugin Menu" src="imgs/plugin_menu.png"/>
+</p>
 
 The results are displayed in the Log window:
 
-[img]
+<p align="center">
+<img alt="Binary Ninja Log" src="imgs/plugin_results.png"/>
+</p>
 
 By clicking on the identified function addresses, Binary Ninja navigates to the selected function.
 
