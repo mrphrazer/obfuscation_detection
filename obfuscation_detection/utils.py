@@ -45,8 +45,8 @@ def calc_cyclomatic_complexity(function):
 
 
 def calc_average_instructions_per_block(function):
-    # number of basic blocks
-    num_blocks = len(function.basic_blocks)
+    # number of basic blocks -- set to 1 if 0
+    num_blocks = max(1, len(function.basic_blocks))
     # number of instructions
     num_instructions = sum(
         (b.instruction_count for b in function.basic_blocks))
