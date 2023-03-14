@@ -68,7 +68,11 @@ By clicking on the identified function addresses, Binary Ninja navigates to the 
 
 ### Headless
 
-To use the plugin in headless mode, run `scripts/detect_obfuscation.py`.
+To use the plugin in headless mode, run [`scripts/detect_obfuscation.py`](scripts/detect_obfuscation.py):
+
+```
+$ python3 scripts/detect_obfuscation.py <binary>
+```
 
 
 ## Detection Heuristics
