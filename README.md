@@ -27,8 +27,9 @@ Some example use cases can be found in [examples](./examples).
 ## Core Features
 
 * identifies interesting code constructs in large binaries
+* highlights disaligned instructions in Binary Ninja's graph view
 * efficient and architecture-agnostic implementation
-* runs as background task
+* runs as a background task
 * can be used in UI and headless mode
 
 
