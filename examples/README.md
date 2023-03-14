@@ -1,6 +1,6 @@
 # Example Use Cases
 
-The malware samples in `samples.zip` can be used to test the plugin and reproduce the results from the blog posts. To unpack, use the passwort "infected" or the following command:
+The malware samples in `samples.zip` can be used to test the plugin and reproduce the results from the blog posts. To unpack, use the password "infected" or the following command:
 
 ```
 $ unzip -P infected samples.zip

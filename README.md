@@ -5,7 +5,7 @@ _Automatically detect obfuscated code and other interesting code constructs_
 
 ## Description:
 
-_Obfuscation Detection_ is a Binary Ninja plugin to detect obfuscated code and interesting code constructs (e.g, state machines) in binaries. Given a binary, the plugin eases analysis by identifying code locations which might be worth a closer look during reverse engineering.
+_Obfuscation Detection_ is a Binary Ninja plugin to detect obfuscated code and interesting code constructs (e.g., state machines) in binaries. Given a binary, the plugin eases analysis by identifying code locations which might be worth a closer look during reverse engineering.
 
 Based on various heuristics, the plugin pinpoints functions that contain complex or uncommon code constructs. Such code constructs may implement
 
@@ -84,11 +84,11 @@ The plugin implements various detection heuristics to detect different code cons
 
 ### Large Basic Blocks
 
-The large basic block heuristic identifies the top 10% of functions with the largest avergage number of instructions per basic block. It allows to detect
+The large basic block heuristic identifies the top 10% of functions with the largest average number of instructions per basic block. It allows to detect
 
 * unrolled code
 * cryptographic implementations
-* initalization routines
+* initialization routines
 * arithmetic obfuscation / Mixed Boolean-Arithmetic
 
 ### Complex Functions
