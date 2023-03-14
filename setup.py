@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="obfuscation_detection",
-    version="1.6",
+    version="1.7",
     author="Tim Blazytko",
     author_email="tim@blazytko.to",
-    description="Collection of scripts to pinpoint obfuscated code",
+    description="Binary Ninja plugin to identify obfuscated code and other interesting code constructs",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/mrphrazer/obfuscation_detection",

@@ -8,7 +8,7 @@
    "api": [
       "python3"
    ],
-   "description": "Automatically detect obfuscated code and other state machines",
+   "description": "Automatically detect obfuscated code and other interesting code constructs",
    "longdescription": "",
    "license": {
       "name": "GPL-2.0",
@@ -24,6 +24,6 @@
       "Windows": "",
       "Linux": ""
    },
-   "version": "1.6",
+   "version": "1.7",
    "minimumbinaryninjaversion": 2487
 }
