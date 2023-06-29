@@ -21,7 +21,7 @@ The following blog posts provide more information about the underlying heuristic
 * [Automated Detection of Obfuscated Code](https://synthesis.to/2021/08/10/obfuscation_detection.html)
 * [Statistical Analysis to Detect Uncommon Code](https://synthesis.to//2023/01/26/uncommon_instruction_sequences.html)
 
-Some example use cases can be found in [examples](./examples).
+Some example use cases can be found in [examples](./examples). Furthermore, the REcon talk ["Unveiling Secrets in Binaries using Code Detection Strategies"](https://cfp.recon.cx/2023/talk/QD8UNJ/) demonstrates some use cases. The slides can be found [here](./presentation/recon23_code_detection.pdf)
 
 
 ## Core Features
@@ -136,6 +136,15 @@ The heuristic for most called functions identifies the top 10% of functions with
 
 * string decryption routines
 * library functions in statically linked binaries
+
+
+### XOR Decryption Loops
+
+The heuristic identifies functions which perform an XOR operation with a constant inside of a loop. This way, the heuristic can identify
+
+* string decryption routines
+* code decryptions stubs
+* cryptographic implementations
 
 
 ## Contact
