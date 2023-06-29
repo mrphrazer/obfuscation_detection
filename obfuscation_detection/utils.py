@@ -53,6 +53,45 @@ def calc_average_instructions_per_block(function):
     return num_instructions / num_blocks
 
 
+def block_is_in_loop(block):
+    # a block is in a natural loop if it is in its own dominance frontier
+    return block in block.dominance_frontier
+
+
+def computes_xor_const(llil_instr):
+    # check for instruction pattern: dst := src ^ const
+    # check for dst = <...>
+    if len(llil_instr.operands) != 2:
+        return False
+    # check if rhs has attribute 'operation'
+    if not hasattr(llil_instr.operands[1], 'operation'):
+        return False
+    # check for a xor operation
+    if llil_instr.operands[1].operation == LowLevelILOperation.LLIL_XOR:
+        # check if one operand is a constant
+        if any((op.operation == LowLevelILOperation.LLIL_CONST for op in llil_instr.operands[1].operands)):
+            return True
+    return False
+
+
+def contains_xor_decryption_loop(bv, function):
+    # walk over all blocks which are part of a loop
+    for block in function.basic_blocks:
+        if not block_is_in_loop(block):
+            continue
+        # walk over all instructions
+        addr = block.start
+        while addr < block.end:
+            # get lifted IL
+            llil_instr = function.arch.get_instruction_low_level_il_instruction(bv, addr)
+            # check if it performs an xor with a constant
+            if computes_xor_const(llil_instr):
+                return True
+            # compute next address
+            addr += bv.get_instruction_length(addr)
+    return False
+
+
 def sliding_window(l, window_size):
     # yiels all sliding windows of size `window_size` for a given list
     for index in range(len(l) - window_size + 1):

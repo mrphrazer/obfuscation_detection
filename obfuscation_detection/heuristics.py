@@ -112,3 +112,13 @@ def find_most_called_functions(bv):
     for f, score in get_top_10_functions(bv.functions, lambda f: len(f.callers)):
         print(
             f"Function {hex(f.start)} ({f.name}) is called from {score} different functions.")
+
+
+def find_xor_decryption_loops(bv):
+    print("=" * 80)
+    print("XOR Decryption Loops")
+
+    for f in bv.functions:
+        if contains_xor_decryption_loop(bv, f):
+            print(
+                f"Function {hex(f.start)} ({f.name}) contains a XOR decryption loop with a constant.")

@@ -49,6 +49,12 @@ def find_most_called_functions_bg(bv):
     background_task.start()
 
 
+def find_xor_decryption_loops_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions with xor decryption loops", find_xor_decryption_loops)
+    background_task.start()
+
+
 def detect_obfuscation_bg(bv):
     background_task = BGTask(
         bv, "Detecting obfuscated functions", detect_obfuscation)
@@ -73,3 +79,6 @@ def detect_obfuscation(bv):
 
     # find most-called functions
     find_most_called_functions(bv)
+
+    # find functions with xor decryption loops
+    find_xor_decryption_loops(bv)
