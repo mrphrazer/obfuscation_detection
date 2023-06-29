@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="obfuscation_detection",
-    version="1.7",
+    version="1.8",
     author="Tim Blazytko",
     author_email="tim@blazytko.to",
     description="Binary Ninja plugin to identify obfuscated code and other interesting code constructs",
