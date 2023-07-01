@@ -52,6 +52,9 @@ def calc_average_instructions_per_block(function):
         (b.instruction_count for b in function.basic_blocks))
     return num_instructions / num_blocks
 
+def calc_number_of_loops(function):
+    return sum((1 for b in function.basic_blocks if b in b.dominance_frontier))
+
 
 def block_is_in_loop(block):
     # a block is in a natural loop if it is in its own dominance frontier
@@ -59,6 +62,7 @@ def block_is_in_loop(block):
 
 
 def computes_xor_const(llil_instr):
+    """Checks an LLIL instruction for the pattern x ^ const"""
     # check for instruction pattern: dst := src ^ const
     # check for dst = <...>
     if len(llil_instr.operands) != 2:
@@ -74,7 +78,7 @@ def computes_xor_const(llil_instr):
     return False
 
 
-def contains_xor_decryption_loop(bv, function):
+def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
     # walk over all blocks which are part of a loop
     for block in function.basic_blocks:
         if not block_is_in_loop(block):
@@ -84,12 +88,78 @@ def contains_xor_decryption_loop(bv, function):
         while addr < block.end:
             # get lifted IL
             llil_instr = function.arch.get_instruction_low_level_il_instruction(bv, addr)
-            # check if it performs an xor with a constant
-            if computes_xor_const(llil_instr):
+            # checks for a specific xor characteristic
+            if xor_check(llil_instr):
                 return True
             # compute next address
             addr += bv.get_instruction_length(addr)
     return False
+
+
+def find_rc4_ksa(bv, function):
+    # function has two natural loops
+    if not calc_number_of_loops(function) == 2:
+        return False
+    # contains at least once the constant 0x100
+    for instr in function.instructions:
+        llil_instr = function.arch.get_instruction_low_level_il_instruction(bv, instr[1])
+        if any(c == 0x100 for c in get_llil_constants(llil_instr)):
+            return True
+    return False
+
+
+def find_rc4_prga(bv, function):
+    """
+    Tries to identify RC4-based PRGA implementations 
+    by checking for specific xor instructions in a loop
+    """
+    return contains_xor_decryption_loop(bv, function, xor_check=computes_rc4_xor)
+
+
+def computes_rc4_xor(llil_instr):
+    """
+    Checks for XOR variants commonly found in RC4:
+    1. bytewise xor
+    2. no constants as operands
+    3. different operands
+    """
+    # check for instruction pattern: dst := src ^ const
+    # check for dst = <...>
+    if len(llil_instr.operands) != 2:
+        return False
+    # check if rhs has attribute 'operation'
+    if not hasattr(llil_instr.operands[1], 'operation'):
+        return False
+    # checks if its a byte operation
+    if not llil_instr.size == 1:
+        return False
+    # check for a xor operation
+    if llil_instr.operands[1].operation == LowLevelILOperation.LLIL_XOR:
+        # does not use constants
+        if any((op.operation == LowLevelILOperation.LLIL_CONST for op in llil_instr.operands[1].operands)):
+            return False
+        # operands are different (no initialization with 0)
+        if llil_instr.operands[1].operands[0].src == llil_instr.operands[1].operands[1].src:
+            return False
+        return True
+    return False
+
+
+def get_llil_constants(llil_instr):
+    """Yields all constants in LLIL expressions"""
+    worklist = [llil_instr]
+    # iteratively walk over all operands
+    while len(worklist) != 0:
+        # pop from worklist
+        llil_instr = worklist.pop()
+        if not hasattr(llil_instr, 'operation'):
+            continue
+        # check if constant
+        if llil_instr.operation == LowLevelILOperation.LLIL_CONST:
+            yield llil_instr.constant
+        # add operands to worklist
+        for op in llil_instr.operands:
+            worklist.append(op)
 
 
 def sliding_window(l, window_size):

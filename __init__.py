@@ -7,7 +7,8 @@ from .obfuscation_detection import (detect_obfuscation_bg,
                                     find_large_basic_blocks_bg,
                                     find_most_called_functions_bg,
                                     find_uncommon_instruction_sequences_bg,
-                                    find_xor_decryption_loops_bg)
+                                    find_xor_decryption_loops_bg,
+                                    find_rc4_bg)
 
 PluginCommand.register("Obfuscation Detection\\All",
                        "Detects obfuscated code via heuristics", detect_obfuscation_bg)
@@ -32,3 +33,6 @@ PluginCommand.register("Obfuscation Detection\\Most Called Functions",
 
 PluginCommand.register("Obfuscation Detection\\XOR Decryption Loops",
                        "Detect functions with XOR decryption loops", find_xor_decryption_loops_bg)
+
+PluginCommand.register("Obfuscation Detection\\Utils\\RC4 Implementations",
+                       "Detect functions which potentially implement RC4 algorithms", find_rc4_bg)
