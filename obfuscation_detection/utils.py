@@ -4,6 +4,7 @@ from math import ceil
 from binaryninja.enums import LowLevelILOperation
 
 from .ngrams import determine_ngram_database
+from .loop_analysis import compute_blocks_in_loops, compute_number_of_loops
 
 
 def calc_flattening_score(function):
@@ -52,13 +53,7 @@ def calc_average_instructions_per_block(function):
         (b.instruction_count for b in function.basic_blocks))
     return num_instructions / num_blocks
 
-def calc_number_of_loops(function):
-    return sum((1 for b in function.basic_blocks if b in b.dominance_frontier))
 
-
-def block_is_in_loop(block):
-    # a block is in a natural loop if it is in its own dominance frontier
-    return block in block.dominance_frontier
 
 
 def computes_xor_const(llil_instr):
@@ -80,9 +75,7 @@ def computes_xor_const(llil_instr):
 
 def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
     # walk over all blocks which are part of a loop
-    for block in function.basic_blocks:
-        if not block_is_in_loop(block):
-            continue
+    for block in compute_blocks_in_loops(function):
         # walk over all instructions
         addr = block.start
         while addr < block.end:
@@ -98,7 +91,7 @@ def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
 
 def find_rc4_ksa(bv, function):
     # function has two natural loops
-    if not calc_number_of_loops(function) == 2:
+    if not compute_number_of_loops(function) == 2:
         return False
     # contains at least once the constant 0x100
     for instr in function.instructions:
