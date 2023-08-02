@@ -20,6 +20,7 @@ The following blog posts provide more information about the underlying heuristic
 * [Automated Detection of Control-flow Flattening](https://synthesis.to/2021/03/03/flattening_detection.html)
 * [Automated Detection of Obfuscated Code](https://synthesis.to/2021/08/10/obfuscation_detection.html)
 * [Statistical Analysis to Detect Uncommon Code](https://synthesis.to//2023/01/26/uncommon_instruction_sequences.html)
+* [Identification of API Functions in Binaries](https://synthesis.to/2023/08/02/api_functions.html)
 
 Some example use cases can be found in [examples](./examples). Furthermore, the REcon talk ["Unveiling Secrets in Binaries using Code Detection Strategies"](https://cfp.recon.cx/2023/talk/QD8UNJ/) demonstrates some use cases. The slides can be found [here](./presentation/recon23_code_detection.pdf); the recording can be found [here](https://www.youtube.com/watch?v=y95MNr2Xu-g).
 
