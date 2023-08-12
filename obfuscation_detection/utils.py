@@ -167,8 +167,8 @@ def get_top_10_functions(functions, scoring_function):
     # sort functions by scoring function
     sorted_functions = sorted(((f, scoring_function(f))
                                for f in functions), key=lambda x: x[1])
-    # bound to locate the top 10%
-    bound = bound = ceil(((len(functions) * 10) / 100))
+    # bound to locate the top 10%, but 10 minimum, 1k maximum
+    bound = max(min(ceil(((len(functions) * 10) / 100)), 1000), 10)
     # yield top 10% (iterate in descending order)
     for function, score in list(reversed(sorted_functions))[:bound]:
         yield function, score
