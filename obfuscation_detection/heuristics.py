@@ -122,3 +122,41 @@ def find_xor_decryption_loops(bv):
         if contains_xor_decryption_loop(bv, f):
             print(
                 f"Function {hex(f.start)} ({f.name}) contains a XOR decryption loop with a constant.")
+
+arithmetic_op = [HighLevelILOperation.HLIL_ADD, HighLevelILOperation.HLIL_NEG, HighLevelILOperation.HLIL_SUB, HighLevelILOperation.HLIL_MUL, HighLevelILOperation.HLIL_DIVS, HighLevelILOperation.HLIL_MODS]
+boolean_op = [HighLevelILOperation.HLIL_NOT, HighLevelILOperation.HLIL_AND, HighLevelILOperation.HLIL_OR, HighLevelILOperation.HLIL_XOR]
+arithmetic_counter = 0
+boolean_counter = 0
+
+def traverse_HLIL(il, ident):
+    global arithmetic_counter, boolean_counter
+    if isinstance(il, highlevelil.HighLevelILInstruction):
+        if il.operation in arithmetic_op:
+            arithmetic_counter += 1
+
+        if il.operation in boolean_op:
+            boolean_counter += 1
+
+        for o in il.operands:
+            traverse_HLIL(o, ident+1)
+
+def find_mba_expressions(bv):
+    print("=" * 80)
+    print("Functions that might have MBA expressions:")
+    global boolean_counter, arithmetic_counter
+    # iterate through functions 
+    for f in bv.functions:
+        instr_mba = 0
+        if f.hlil is not None:
+            # iterate through HIL instructions via AST
+            for ins in f.hlil.root:
+                # reset the counters per each instruction
+                boolean_counter = 0
+                arithmetic_counter = 0
+                traverse_HLIL(ins, 0)
+                # if an expression has a boolean operation and a arithmetic operation, it's probably an MBA expression
+                if boolean_counter >= 1 and arithmetic_counter >= 1:
+                    instr_mba += 1
+            
+            if instr_mba != 0:
+                print(f"Function {hex(f.start)} ({f.name}) has {instr_mba} instructions that resemble MBA expressions")
