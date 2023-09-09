@@ -1,7 +1,8 @@
 from collections import Counter
 from math import ceil
 
-from binaryninja.enums import LowLevelILOperation
+from binaryninja import highlevelil
+from binaryninja.enums import LowLevelILOperation, HighLevelILOperation
 
 from .ngrams import determine_ngram_database
 
@@ -162,6 +163,42 @@ def calc_uncommon_instruction_sequences_score(function):
     score = count / sum(function_ngrams.values())
     return score
 
+arithmetic_op = set([HighLevelILOperation.HLIL_ADD, HighLevelILOperation.HLIL_NEG, HighLevelILOperation.HLIL_SUB, HighLevelILOperation.HLIL_MUL, HighLevelILOperation.HLIL_DIVS, HighLevelILOperation.HLIL_MODS])
+boolean_op = set([HighLevelILOperation.HLIL_NOT, HighLevelILOperation.HLIL_AND, HighLevelILOperation.HLIL_OR, HighLevelILOperation.HLIL_XOR])
+arithmetic_counter = 0
+boolean_counter = 0
+
+def traverse_HLIL(il):
+    global arithmetic_counter, boolean_counter
+    if isinstance(il, highlevelil.HighLevelILInstruction):
+        if il.operation in arithmetic_op:
+            arithmetic_counter += 1
+
+        if il.operation in boolean_op:
+            boolean_counter += 1
+
+        for o in il.operands:
+            traverse_HLIL(o)
+
+def calculate_arithmetic_complexity_expressions(function):
+    # check if the hlil AST has been generated for the function
+    if function.analysis_skipped: return 0
+
+    global boolean_counter, arithmetic_counter
+
+    instr_mba = 0
+
+    if function.hlil is not None:
+        for ins in function.hlil.root:
+            # reset counters
+            boolean_counter = 0
+            arithmetic_counter = 0
+            traverse_HLIL(ins)
+            # if an expression has a boolean operation and a arithmetic operation, the expression has some arithmetic complexity
+            if boolean_counter >= 1 and arithmetic_counter >= 1:
+                instr_mba += 1
+
+    return instr_mba            
 
 def get_top_10_functions(functions, scoring_function):
     # sort functions by scoring function
