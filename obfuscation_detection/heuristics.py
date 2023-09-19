@@ -122,3 +122,16 @@ def find_xor_decryption_loops(bv):
         if contains_xor_decryption_loop(bv, f):
             print(
                 f"Function {hex(f.start)} ({f.name}) contains a XOR decryption loop with a constant.")
+
+def find_complex_arithmetic_expressions(bv):
+    """
+    Heuristic to identify complex (mixed) boolean expressions inspired by gooMBA:
+    https://github.com/HexRaysSA/goomba
+    """
+    print("=" * 80)
+    print("Functions with complex arithmetic expressions:")
+    
+    for f, score in get_top_10_functions(bv.functions, lambda f: calculate_complex_arithmetic_expressions(f)):
+        if score != 0:
+            print(
+                f"Function {hex(f.start)} ({(f.name)}) has {score} instruction that seem to be complex arithmetic expressions.")

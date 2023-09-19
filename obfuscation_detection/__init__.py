@@ -61,6 +61,11 @@ def detect_obfuscation_bg(bv):
     background_task.start()
 
 
+def find_complex_arithmetic_expressions_bg(bv):
+    background_task = BGTask(
+        bv, "Detect functions with complex arithmetic expressions", find_complex_arithmetic_expressions)
+    background_task.start()
+
 def detect_obfuscation(bv):
     # find flattened functions
     find_flattened_functions(bv)
@@ -82,3 +87,6 @@ def detect_obfuscation(bv):
 
     # find functions with xor decryption loops
     find_xor_decryption_loops(bv)
+
+    # find expressions that include boolean and arithmetic operations
+    find_complex_arithmetic_expressions(bv)
