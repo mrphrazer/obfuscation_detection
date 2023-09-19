@@ -7,25 +7,13 @@ def find_flattened_functions(bv):
     print("=" * 80)
     print("Control Flow Flattening")
 
-    # set of (function, score) tuples
-    flattening_results = set()
-
-    # walk over all functions
-    for function in bv.functions:
-        # calculate flattening score
-        score = calc_flattening_score(function)
-        # skip if score is too low
-        if score < 0.9:
-            # print(f"Function {hex(function.start)} has a flattening score of {score}.")
+    # print top 10% (iterate in descending order)
+    for f, score in get_top_10_functions(bv.functions, calc_flattening_score):
+        # skip bad scores
+        if score == 0.0:
             continue
-
-        # add to set
-        flattening_results.add((function, score))
-
-    # print function and scores in descending order
-    for function, score in reversed(sorted(flattening_results, key=lambda x: x[1])):
         print(
-            f"Function {hex(function.start)} ({function.name}) has a flattening score of {score}.")
+            f"Function {hex(f.start)} ({f.name}) has a flattening score of {score}.")
 
 
 def find_complex_functions(bv):
