@@ -6,6 +6,7 @@ from binaryninja.enums import LowLevelILOperation, HighLevelILOperation
 
 from .ngrams import determine_ngram_database
 
+
 # initialize operations
 ARITHMETIC_OPERATION = set([
     HighLevelILOperation.HLIL_ADD,
@@ -24,6 +25,7 @@ BOOLEAN_OPERATION = set([
     HighLevelILOperation.HLIL_LSR,
     HighLevelILOperation.HLIL_LSL
 ])
+
 
 def calc_flattening_score(function):
     score = 0.0

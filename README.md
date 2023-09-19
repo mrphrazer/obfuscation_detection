@@ -152,7 +152,7 @@ The heuristic identifies functions which perform an XOR operation with a constan
 
 The heuristic identifies functions in which the expressions have more than one arithmetic operation and one boolean operation simultaneously. This way, the heuristic can identify
 
-* mixed-boolean arithmetic obfuscations
+* mixed-boolean arithmetic obfuscation
 * initialization routine
 * cryptographic implementations
 
