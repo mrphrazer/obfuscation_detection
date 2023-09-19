@@ -1,4 +1,4 @@
-# Obfuscation Detection (v1.8)
+# Obfuscation Detection (v1.9)
 Author: **Tim Blazytko**
 
 _Automatically detect obfuscated code and other interesting code constructs_
