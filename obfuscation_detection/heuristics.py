@@ -122,4 +122,4 @@ def find_complex_arithmetic_expressions(bv):
     for f, score in get_top_10_functions(bv.functions, lambda f: calculate_complex_arithmetic_expressions(f)):
         if score != 0:
             print(
-                f"Function {hex(f.start)} ({(f.name)}) has {score} instruction that seem to be complex arithmetic expressions.")
+                f"Function {hex(f.start)} ({(f.name)}) has {score} instructions that use complex arithmetic expressions.")
