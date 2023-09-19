@@ -8,7 +8,7 @@ from .obfuscation_detection import (detect_obfuscation_bg,
                                     find_most_called_functions_bg,
                                     find_uncommon_instruction_sequences_bg,
                                     find_xor_decryption_loops_bg,
-                                    find_arithmetic_complexity_expressions_bg)
+                                    find_complex_arithmetic_expressions_bg)
 
 PluginCommand.register("Obfuscation Detection\\All",
                        "Detects obfuscated code via heuristics", detect_obfuscation_bg)
@@ -35,4 +35,4 @@ PluginCommand.register("Obfuscation Detection\\XOR Decryption Loops",
                        "Detect functions with XOR decryption loops", find_xor_decryption_loops_bg)
 
 PluginCommand.register("Obfuscation Detection\\Arithmetic Complexity",
-                       "Detect functions with complex arithmetic expressions", find_arithmetic_complexity_expressions_bg)
+                       "Detect functions with complex arithmetic expressions", find_complex_arithmetic_expressions_bg)

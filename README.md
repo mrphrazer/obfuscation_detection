@@ -148,6 +148,15 @@ The heuristic identifies functions which perform an XOR operation with a constan
 * cryptographic implementations
 
 
+### Complex Arithmetic Expressions 
+
+The heuristic identifies functions in which the expressions have more than one arithmetic operation and one boolean operation simultaneously. This way, the heuristic can identify
+
+* mixed-boolean arithmetic obfuscations
+* initialization routine
+* cryptographic implementations
+
+
 ## Contact
 
 For more information, contact [@mr_phrazer](https://twitter.com/mr_phrazer).

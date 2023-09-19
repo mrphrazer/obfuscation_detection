@@ -6,6 +6,24 @@ from binaryninja.enums import LowLevelILOperation, HighLevelILOperation
 
 from .ngrams import determine_ngram_database
 
+# initialize operations
+ARITHMETIC_OPERATION = set([
+    HighLevelILOperation.HLIL_ADD,
+    HighLevelILOperation.HLIL_NEG,
+    HighLevelILOperation.HLIL_SUB,
+    HighLevelILOperation.HLIL_MUL,
+    HighLevelILOperation.HLIL_DIVS,
+    HighLevelILOperation.HLIL_MODS,
+])
+
+BOOLEAN_OPERATION = set([
+    HighLevelILOperation.HLIL_NOT,
+    HighLevelILOperation.HLIL_AND,
+    HighLevelILOperation.HLIL_OR,
+    HighLevelILOperation.HLIL_XOR,
+    HighLevelILOperation.HLIL_LSR,
+    HighLevelILOperation.HLIL_LSL
+])
 
 def calc_flattening_score(function):
     score = 0.0
@@ -163,42 +181,47 @@ def calc_uncommon_instruction_sequences_score(function):
     score = count / sum(function_ngrams.values())
     return score
 
-arithmetic_op = set([HighLevelILOperation.HLIL_ADD, HighLevelILOperation.HLIL_NEG, HighLevelILOperation.HLIL_SUB, HighLevelILOperation.HLIL_MUL, HighLevelILOperation.HLIL_DIVS, HighLevelILOperation.HLIL_MODS])
-boolean_op = set([HighLevelILOperation.HLIL_NOT, HighLevelILOperation.HLIL_AND, HighLevelILOperation.HLIL_OR, HighLevelILOperation.HLIL_XOR])
-arithmetic_counter = 0
-boolean_counter = 0
 
-def traverse_HLIL(il):
-    global arithmetic_counter, boolean_counter
-    if isinstance(il, highlevelil.HighLevelILInstruction):
-        if il.operation in arithmetic_op:
-            arithmetic_counter += 1
+def uses_mixed_boolean_arithmetic(hlil_instruction):
+    # initialize
+    global ARITHMETIC_OPERATION, BOOLEAN_OPERATION
+    uses_boolean = False
+    uses_arithmetic = False
+    ins_stack = [hlil_instruction]
 
-        if il.operation in boolean_op:
-            boolean_counter += 1
+    # worklist algorithm
+    while len(ins_stack) != 0:
+        instruction = ins_stack.pop()
+        # check if boolean or arithmetic operation
+        if isinstance(instruction, highlevelil.HighLevelILInstruction):
+            # arithmetic operation
+            if instruction.operation in ARITHMETIC_OPERATION:
+                uses_arithmetic = True
+            # boolean operation
+            elif instruction.operation in BOOLEAN_OPERATION:
+                uses_boolean = True
+            # mixed boolean arithmetic
+            if uses_boolean and uses_arithmetic:
+                return True
+            # add operands to worklist
+            for op in instruction.operands:
+                ins_stack.append(op)
+    return False
 
-        for o in il.operands:
-            traverse_HLIL(o)
 
-def calculate_arithmetic_complexity_expressions(function):
-    # check if the hlil AST has been generated for the function
-    if function.analysis_skipped: return 0
-
-    global boolean_counter, arithmetic_counter
-
+def calculate_complex_arithmetic_expressions(function):
+    # check if the hlil has been generated for the function
+    if function.hlil_if_available == None:
+        return 0
+    # init mba counter
     instr_mba = 0
+    # iterate hlil instructions
+    for ins in function.hlil_if_available.instructions:
+        # if an expression has a boolean and an arithmetic operation, the expression has some arithmetic complexity
+        if uses_mixed_boolean_arithmetic(ins):
+            instr_mba += 1
+    return instr_mba           
 
-    if function.hlil is not None:
-        for ins in function.hlil.root:
-            # reset counters
-            boolean_counter = 0
-            arithmetic_counter = 0
-            traverse_HLIL(ins)
-            # if an expression has a boolean operation and a arithmetic operation, the expression has some arithmetic complexity
-            if boolean_counter >= 1 and arithmetic_counter >= 1:
-                instr_mba += 1
-
-    return instr_mba            
 
 def get_top_10_functions(functions, scoring_function):
     # sort functions by scoring function
