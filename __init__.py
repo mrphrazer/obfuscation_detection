@@ -32,7 +32,7 @@ PluginCommand.register("Obfuscation Detection\\Most Called Functions",
                        "Detects the most called functions", find_most_called_functions_bg)
 
 PluginCommand.register("Obfuscation Detection\\XOR Decryption Loops",
-                       "Detect functions with XOR decryption loops", find_xor_decryption_loops_bg)
+                       "Detects functions with XOR decryption loops", find_xor_decryption_loops_bg)
 
 PluginCommand.register("Obfuscation Detection\\Arithmetic Complexity",
-                       "Detect functions with complex arithmetic expressions", find_complex_arithmetic_expressions_bg)
+                       "Detects functions with complex arithmetic expressions", find_complex_arithmetic_expressions_bg)
