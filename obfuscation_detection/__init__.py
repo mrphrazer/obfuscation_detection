@@ -13,6 +13,7 @@ class BGTask(BackgroundTaskThread):
         self.f(self.bv)
 
 
+# heuristics
 def find_flattened_functions_bg(bv):
     background_task = BGTask(
         bv, "Finding flattened functions", find_flattened_functions)
@@ -55,9 +56,9 @@ def find_xor_decryption_loops_bg(bv):
     background_task.start()
 
 
-def find_rc4_bg(bv):
+def find_complex_arithmetic_expressions_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions which potentially implement RC4", find_rc4)
+        bv, "Finding functions with complex arithmetic expressions", find_complex_arithmetic_expressions)
     background_task.start()
 
 
@@ -89,6 +90,32 @@ def detect_obfuscation(bv):
     # find functions with xor decryption loops
     find_xor_decryption_loops(bv)
 
-    # find functions with xor decryption loops
-    find_rc4(bv)
+    # find expressions that include boolean and arithmetic operations
+    find_complex_arithmetic_expressions(bv)
 
+# utils
+
+
+def find_entry_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions without callers (entry functions)", find_entry_functions)
+    background_task.start()
+
+
+def find_leaf_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions without callees (leaf functions)", find_leaf_functions)
+    background_task.start()
+
+
+def find_rc4_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions which potentially implement RC4", find_rc4)
+    background_task.start()
+
+def run_utils_bg(bv):
+    # find entry functions
+    find_entry_functions(bv)
+
+    # find leaf functions
+    find_leaf_functions(bv)

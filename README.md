@@ -1,4 +1,4 @@
-# Obfuscation Detection (v1.8)
+# Obfuscation Detection (v1.9)
 Author: **Tim Blazytko**
 
 _Automatically detect obfuscated code and other interesting code constructs_
@@ -20,8 +20,9 @@ The following blog posts provide more information about the underlying heuristic
 * [Automated Detection of Control-flow Flattening](https://synthesis.to/2021/03/03/flattening_detection.html)
 * [Automated Detection of Obfuscated Code](https://synthesis.to/2021/08/10/obfuscation_detection.html)
 * [Statistical Analysis to Detect Uncommon Code](https://synthesis.to//2023/01/26/uncommon_instruction_sequences.html)
+* [Identification of API Functions in Binaries](https://synthesis.to/2023/08/02/api_functions.html)
 
-Some example use cases can be found in [examples](./examples). Furthermore, the REcon talk ["Unveiling Secrets in Binaries using Code Detection Strategies"](https://cfp.recon.cx/2023/talk/QD8UNJ/) demonstrates some use cases. The slides can be found [here](./presentation/recon23_code_detection.pdf).
+Some example use cases can be found in [examples](./examples). Furthermore, the REcon talk ["Unveiling Secrets in Binaries using Code Detection Strategies"](https://cfp.recon.cx/2023/talk/QD8UNJ/) demonstrates some use cases. The slides can be found [here](./presentation/recon23_code_detection.pdf); the recording can be found [here](https://www.youtube.com/watch?v=y95MNr2Xu-g).
 
 
 ## Core Features
@@ -51,6 +52,7 @@ pip install .
 ## Usage
 
 The plugin can be used in the user interface and in headless mode.
+
 
 ### User Interface
 
@@ -145,6 +147,37 @@ The heuristic identifies functions which perform an XOR operation with a constan
 * string decryption routines
 * code decryption stubs
 * cryptographic implementations
+
+
+### Complex Arithmetic Expressions 
+
+The heuristic identifies functions in which the expressions have more than one arithmetic operation and one boolean operation simultaneously. This way, the heuristic can identify
+
+* mixed-boolean arithmetic obfuscation
+* initialization routine
+* cryptographic implementations
+
+
+## Utils
+
+Contrary to the detection heuristics which target a wider scope of code, the plugin also implements various helpers which aim to identify functions with a narrower scope. In the following, we describe these helpers and explain their characteristics.
+
+
+### Entry Functions
+
+This helper identifies functions without known callers. These functions might be 
+
+* entry points in the binary
+* indirect jumps targets where the call hierarchy could not be recovered by the disassembler
+
+
+### Leaf Functions
+
+This helper identifies functions that do not call other functions. These kinds of functions may, for example, be functions that
+
+* are outlined by the compiler to implement functionalities utilized across various code locations
+* are trampolines to other functions
+* are part of code obfuscation schemes (e.g., outlined computations for control-flow obfuscation)
 
 
 ## Contact

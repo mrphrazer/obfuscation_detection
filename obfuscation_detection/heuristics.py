@@ -7,25 +7,13 @@ def find_flattened_functions(bv):
     print("=" * 80)
     print("Control Flow Flattening")
 
-    # set of (function, score) tuples
-    flattening_results = set()
-
-    # walk over all functions
-    for function in bv.functions:
-        # calculate flattening score
-        score = calc_flattening_score(function)
-        # skip if score is too low
-        if score < 0.9:
-            # print(f"Function {hex(function.start)} has a flattening score of {score}.")
+    # print top 10% (iterate in descending order)
+    for f, score in get_top_10_functions(bv.functions, calc_flattening_score):
+        # skip bad scores
+        if score == 0.0:
             continue
-
-        # add to set
-        flattening_results.add((function, score))
-
-    # print function and scores in descending order
-    for function, score in reversed(sorted(flattening_results, key=lambda x: x[1])):
         print(
-            f"Function {hex(function.start)} ({function.name}) has a flattening score of {score}.")
+            f"Function {hex(f.start)} ({f.name}) has a flattening score of {score}.")
 
 
 def find_complex_functions(bv):
@@ -122,6 +110,46 @@ def find_xor_decryption_loops(bv):
         if contains_xor_decryption_loop(bv, f):
             print(
                 f"Function {hex(f.start)} ({f.name}) contains a XOR decryption loop with a constant.")
+
+
+def find_complex_arithmetic_expressions(bv):
+    """
+    Heuristic to identify complex (mixed) boolean expressions inspired by gooMBA:
+    https://github.com/HexRaysSA/goomba
+    """
+    print("=" * 80)
+    print("Functions with complex arithmetic expressions:")
+
+    for f, score in get_top_10_functions(bv.functions, lambda f: calculate_complex_arithmetic_expressions(f)):
+        if score != 0:
+            print(
+                f"Function {hex(f.start)} ({(f.name)}) has {score} instructions that use complex arithmetic expressions.")
+
+
+def find_entry_functions(bv):
+    print("=" * 80)
+    print("Functions without callers:")
+
+    for f in bv.functions:
+        if len(f.callers) != 0:
+            continue
+
+        print(
+            f"Function {hex(f.start)} ({(f.name)}) has no known callers.")
+
+
+def find_leaf_functions(bv):
+    print("=" * 80)
+    print("Functions without callees:")
+
+    for f in bv.functions:
+        # no callees and at least two instructions
+        if len(f.callees) == 0 and sum(1 for _ in f.instructions) > 1:
+            print(
+                f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
+
+
+
 
 
 def find_rc4(bv):
