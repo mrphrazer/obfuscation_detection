@@ -13,6 +13,7 @@ class BGTask(BackgroundTaskThread):
         self.f(self.bv)
 
 
+# heuristics
 def find_flattened_functions_bg(bv):
     background_task = BGTask(
         bv, "Finding flattened functions", find_flattened_functions)
@@ -61,18 +62,6 @@ def find_complex_arithmetic_expressions_bg(bv):
     background_task.start()
 
 
-def find_entry_functions_bg(bv):
-    background_task = BGTask(
-        bv, "Finding functions without callers (entry functions)", find_entry_functions)
-    background_task.start()
-
-
-def find_leaf_functions_bg(bv):
-    background_task = BGTask(
-        bv, "Finding functions without callees (leaf functions)", find_leaf_functions)
-    background_task.start()
-
-
 def detect_obfuscation_bg(bv):
     background_task = BGTask(
         bv, "Detecting obfuscated functions", detect_obfuscation)
@@ -103,3 +92,25 @@ def detect_obfuscation(bv):
 
     # find expressions that include boolean and arithmetic operations
     find_complex_arithmetic_expressions(bv)
+
+# utils
+
+
+def find_entry_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions without callers (entry functions)", find_entry_functions)
+    background_task.start()
+
+
+def find_leaf_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions without callees (leaf functions)", find_leaf_functions)
+    background_task.start()
+
+
+def run_utils_bg(bv):
+    # find entry functions
+    find_entry_functions(bv)
+
+    # find leaf functions
+    find_leaf_functions(bv)
