@@ -53,6 +53,7 @@ pip install .
 
 The plugin can be used in the user interface and in headless mode.
 
+
 ### User Interface
 
 Choose the index tab `Plugins -> Obfuscation Detection` to run one or more detection heuristics in Binary Ninja's user interface:
@@ -155,6 +156,28 @@ The heuristic identifies functions in which the expressions have more than one a
 * mixed-boolean arithmetic obfuscation
 * initialization routine
 * cryptographic implementations
+
+
+## Utils
+
+Contrary to the detection heuristics which target a wider scope of code, the plugin also implements various helpers which aim to identify functions with a narrower scope. In the following, we describe these helpers and explain their characteristics.
+
+
+### Entry Functions
+
+This helper identifies functions without known callers. These functions might be 
+
+* entry points in the binary
+* indirect jumps targets where the call hierarchy could not be recovered by the disassembler
+
+
+### Leaf Functions
+
+This helper identifies functions that do not call other functions. These kinds of functions may, for example, be functions that
+
+* are outlined by the compiler to implement functionalities utilized across various code locations
+* are trampolines to other functions
+* are part of code obfuscation schemes (e.g., outlined computations for control-flow obfuscation)
 
 
 ## Contact

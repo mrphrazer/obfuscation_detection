@@ -111,6 +111,7 @@ def find_xor_decryption_loops(bv):
             print(
                 f"Function {hex(f.start)} ({f.name}) contains a XOR decryption loop with a constant.")
 
+
 def find_complex_arithmetic_expressions(bv):
     """
     Heuristic to identify complex (mixed) boolean expressions inspired by gooMBA:
@@ -118,8 +119,31 @@ def find_complex_arithmetic_expressions(bv):
     """
     print("=" * 80)
     print("Functions with complex arithmetic expressions:")
-    
+
     for f, score in get_top_10_functions(bv.functions, lambda f: calculate_complex_arithmetic_expressions(f)):
         if score != 0:
             print(
                 f"Function {hex(f.start)} ({(f.name)}) has {score} instructions that use complex arithmetic expressions.")
+
+
+def find_entry_functions(bv):
+    print("=" * 80)
+    print("Functions without callers:")
+
+    for f in bv.functions:
+        if len(f.callers) != 0:
+            continue
+
+        print(
+            f"Function {hex(f.start)} ({(f.name)}) has no known callers.")
+
+
+def find_leaf_functions(bv):
+    print("=" * 80)
+    print("Functions without callees:")
+
+    for f in bv.functions:
+        # no callees and at least two instructions
+        if len(f.callees) == 0 and sum(1 for _ in f.instructions) > 1:
+            print(
+                f"Function {hex(f.start)} ({(f.name)}) has no known callees.")

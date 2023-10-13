@@ -61,6 +61,18 @@ def find_complex_arithmetic_expressions_bg(bv):
     background_task.start()
 
 
+def find_entry_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions without callers (entry functions)", find_entry_functions)
+    background_task.start()
+
+
+def find_leaf_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions without callees (leaf functions)", find_leaf_functions)
+    background_task.start()
+
+
 def detect_obfuscation_bg(bv):
     background_task = BGTask(
         bv, "Detecting obfuscated functions", detect_obfuscation)

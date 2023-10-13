@@ -104,7 +104,8 @@ def contains_xor_decryption_loop(bv, function):
         addr = block.start
         while addr < block.end:
             # get lifted IL
-            llil_instr = function.arch.get_instruction_low_level_il_instruction(bv, addr)
+            llil_instr = function.arch.get_instruction_low_level_il_instruction(
+                bv, addr)
             # check if it performs an xor with a constant
             if computes_xor_const(llil_instr):
                 return True
@@ -222,7 +223,7 @@ def calculate_complex_arithmetic_expressions(function):
         # if an expression has a boolean and an arithmetic operation, the expression has some arithmetic complexity
         if uses_mixed_boolean_arithmetic(ins):
             instr_mba += 1
-    return instr_mba           
+    return instr_mba
 
 
 def get_top_10_functions(functions, scoring_function):
