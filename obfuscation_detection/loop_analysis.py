@@ -23,7 +23,7 @@ def compute_natural_loop_body(back_edge):
     # initialize worklist
     todo = [back_edge.source]
     while todo:
-        block = todo.pop() 
+        block = todo.pop()
         # walk over edges
         for edge in block.incoming_edges:
             # don't walk beyond loop entry
@@ -37,15 +37,16 @@ def compute_natural_loop_body(back_edge):
 
 
 def compute_natural_loops(function):
-    return {back_edge: compute_natural_loop_body(back_edge) 
+    return {back_edge: compute_natural_loop_body(back_edge)
             for back_edge in compute_natural_loop_back_edges(function)}
 
 
 def compute_blocks_in_natural_loops(function):
     return reduce(
-        lambda x, y: x | y, (v for v in compute_natural_loops(function).values()), 
+        lambda x, y: x | y, (v for v in compute_natural_loops(
+            function).values()),
         set()
-        )
+    )
 
 
 def compute_strongly_connected_components(function):
@@ -116,7 +117,7 @@ def compute_strongly_connected_components(function):
                         scc.add(popped)
 
                         done.add(current.block)
-                    
+
                     yield scc
 
 
@@ -130,6 +131,6 @@ def compute_irreducible_loops(function):
     blocks_in_natural_loops = compute_blocks_in_natural_loops(function)
     # if an scc is a loop and a block in scc is not part of a natural loop => irreducible loop
     return [
-        scc for scc in compute_strongly_connected_components(function) 
-            if scc_is_loop(scc) and not scc.issubset(blocks_in_natural_loops)
+        scc for scc in compute_strongly_connected_components(function)
+        if scc_is_loop(scc) and not scc.issubset(blocks_in_natural_loops)
     ]

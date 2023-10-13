@@ -1,10 +1,30 @@
 from collections import Counter
 from math import ceil
 
-from binaryninja.enums import LowLevelILOperation
+from binaryninja import highlevelil
+from binaryninja.enums import HighLevelILOperation, LowLevelILOperation
 
-from .ngrams import determine_ngram_database
 from .loop_analysis import compute_blocks_in_natural_loops, compute_number_of_natural_loops
+from .ngrams import determine_ngram_database
+
+# initialize operations
+ARITHMETIC_OPERATION = set([
+    HighLevelILOperation.HLIL_ADD,
+    HighLevelILOperation.HLIL_NEG,
+    HighLevelILOperation.HLIL_SUB,
+    HighLevelILOperation.HLIL_MUL,
+    HighLevelILOperation.HLIL_DIVS,
+    HighLevelILOperation.HLIL_MODS,
+])
+
+BOOLEAN_OPERATION = set([
+    HighLevelILOperation.HLIL_NOT,
+    HighLevelILOperation.HLIL_AND,
+    HighLevelILOperation.HLIL_OR,
+    HighLevelILOperation.HLIL_XOR,
+    HighLevelILOperation.HLIL_LSR,
+    HighLevelILOperation.HLIL_LSL
+])
 
 
 def calc_flattening_score(function):
@@ -54,11 +74,8 @@ def calc_average_instructions_per_block(function):
     return num_instructions / num_blocks
 
 
-
-
 def computes_xor_const(llil_instr):
     """Checks an LLIL instruction for the pattern x ^ const"""
-    # check for instruction pattern: dst := src ^ const
     # check for dst = <...>
     if len(llil_instr.operands) != 2:
         return False
@@ -80,7 +97,8 @@ def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
         addr = block.start
         while addr < block.end:
             # get lifted IL
-            llil_instr = function.arch.get_instruction_low_level_il_instruction(bv, addr)
+            llil_instr = function.arch.get_instruction_low_level_il_instruction(
+                bv, addr)
             # checks for a specific xor characteristic
             if xor_check(llil_instr):
                 return True
@@ -95,7 +113,8 @@ def find_rc4_ksa(bv, function):
         return False
     # contains at least once the constant 0x100
     for instr in function.instructions:
-        llil_instr = function.arch.get_instruction_low_level_il_instruction(bv, instr[1])
+        llil_instr = function.arch.get_instruction_low_level_il_instruction(
+            bv, instr[1])
         if any(c == 0x100 for c in get_llil_constants(llil_instr)):
             return True
     return False
@@ -226,12 +245,53 @@ def calc_uncommon_instruction_sequences_score(function):
     return score
 
 
+def uses_mixed_boolean_arithmetic(hlil_instruction):
+    # initialize
+    global ARITHMETIC_OPERATION, BOOLEAN_OPERATION
+    uses_boolean = False
+    uses_arithmetic = False
+    ins_stack = [hlil_instruction]
+
+    # worklist algorithm
+    while len(ins_stack) != 0:
+        instruction = ins_stack.pop()
+        # check if boolean or arithmetic operation
+        if isinstance(instruction, highlevelil.HighLevelILInstruction):
+            # arithmetic operation
+            if instruction.operation in ARITHMETIC_OPERATION:
+                uses_arithmetic = True
+            # boolean operation
+            elif instruction.operation in BOOLEAN_OPERATION:
+                uses_boolean = True
+            # mixed boolean arithmetic
+            if uses_boolean and uses_arithmetic:
+                return True
+            # add operands to worklist
+            for op in instruction.operands:
+                ins_stack.append(op)
+    return False
+
+
+def calculate_complex_arithmetic_expressions(function):
+    # check if the hlil has been generated for the function
+    if function.hlil_if_available == None:
+        return 0
+    # init mba counter
+    instr_mba = 0
+    # iterate hlil instructions
+    for ins in function.hlil_if_available.instructions:
+        # if an expression has a boolean and an arithmetic operation, the expression has some arithmetic complexity
+        if uses_mixed_boolean_arithmetic(ins):
+            instr_mba += 1
+    return instr_mba
+
+
 def get_top_10_functions(functions, scoring_function):
     # sort functions by scoring function
     sorted_functions = sorted(((f, scoring_function(f))
                                for f in functions), key=lambda x: x[1])
-    # bound to locate the top 10%
-    bound = bound = ceil(((len(functions) * 10) / 100))
+    # bound to locate the top 10%, but 10 minimum, 1k maximum
+    bound = max(min(ceil(((len(functions) * 10) / 100)), 1000), 10)
     # yield top 10% (iterate in descending order)
     for function, score in list(reversed(sorted_functions))[:bound]:
         yield function, score
