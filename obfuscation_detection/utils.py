@@ -2,10 +2,10 @@ from collections import Counter
 from math import ceil
 
 from binaryninja import highlevelil
-from binaryninja.enums import LowLevelILOperation, HighLevelILOperation
+from binaryninja.enums import HighLevelILOperation, LowLevelILOperation
+
 from .loop_analysis import compute_blocks_in_loops, compute_number_of_loops
 from .ngrams import determine_ngram_database
-
 
 # initialize operations
 ARITHMETIC_OPERATION = set([
@@ -74,8 +74,6 @@ def calc_average_instructions_per_block(function):
     return num_instructions / num_blocks
 
 
-
-
 def computes_xor_const(llil_instr):
     # check for instruction pattern: dst := src ^ const
     # check for dst = <...>
@@ -99,7 +97,8 @@ def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
         addr = block.start
         while addr < block.end:
             # get lifted IL
-            llil_instr = function.arch.get_instruction_low_level_il_instruction(bv, addr)
+            llil_instr = function.arch.get_instruction_low_level_il_instruction(
+                bv, addr)
             # checks for a specific xor characteristic
             if xor_check(llil_instr):
                 return True
@@ -114,7 +113,8 @@ def find_rc4_ksa(bv, function):
         return False
     # contains at least once the constant 0x100
     for instr in function.instructions:
-        llil_instr = function.arch.get_instruction_low_level_il_instruction(bv, instr[1])
+        llil_instr = function.arch.get_instruction_low_level_il_instruction(
+            bv, instr[1])
         if any(c == 0x100 for c in get_llil_constants(llil_instr)):
             return True
     return False

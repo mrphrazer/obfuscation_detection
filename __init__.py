@@ -15,8 +15,10 @@ from .obfuscation_detection import (
     run_utils_bg,
     find_entry_functions_bg,
     find_leaf_functions_bg,
-find_rc4_bg
+    find_rc4_bg
 )
+
+
 # Heuristics
 PluginCommand.register("Obfuscation Detection\\All",
                        "Detects obfuscated code via heuristics", detect_obfuscation_bg)
@@ -54,8 +56,6 @@ PluginCommand.register("Obfuscation Detection\\Utils\\Entry Functions",
 
 PluginCommand.register("Obfuscation Detection\\Utils\\Leaf Functions",
                        "Detects functions without callees", find_leaf_functions_bg)
-
-
 
 PluginCommand.register("Obfuscation Detection\\Utils\\RC4 Implementations",
                        "Detects functions which potentially implement RC4 algorithms", find_rc4_bg)

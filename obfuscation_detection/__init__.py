@@ -113,9 +113,13 @@ def find_rc4_bg(bv):
         bv, "Finding functions which potentially implement RC4", find_rc4)
     background_task.start()
 
+
 def run_utils_bg(bv):
     # find entry functions
     find_entry_functions(bv)
 
     # find leaf functions
     find_leaf_functions(bv)
+
+    # find rc4 implementations
+    find_rc4(bv)
