@@ -14,7 +14,9 @@ from .obfuscation_detection import (
     # utils
     run_utils_bg,
     find_entry_functions_bg,
-    find_leaf_functions_bg)
+    find_leaf_functions_bg,
+    compute_section_entropy_bg)
+
 # Heuristics
 PluginCommand.register("Obfuscation Detection\\All",
                        "Runs all detection heuristics", detect_obfuscation_bg)
@@ -52,3 +54,6 @@ PluginCommand.register("Obfuscation Detection\\Utils\\Entry Functions",
 
 PluginCommand.register("Obfuscation Detection\\Utils\\Leaf Functions",
                        "Detects functions without callees", find_leaf_functions_bg)
+
+PluginCommand.register("Obfuscation Detection\\Utils\\Section Entropy",
+                       "Computes the entropy of all sections", compute_section_entropy_bg)

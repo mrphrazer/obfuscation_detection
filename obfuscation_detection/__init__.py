@@ -1,6 +1,7 @@
 from binaryninja.plugin import BackgroundTaskThread
 
 from .heuristics import *
+from .utils import *
 
 
 class BGTask(BackgroundTaskThread):
@@ -93,9 +94,8 @@ def detect_obfuscation(bv):
     # find expressions that include boolean and arithmetic operations
     find_complex_arithmetic_expressions(bv)
 
+
 # utils
-
-
 def find_entry_functions_bg(bv):
     background_task = BGTask(
         bv, "Finding functions without callers (entry functions)", find_entry_functions)
@@ -108,9 +108,18 @@ def find_leaf_functions_bg(bv):
     background_task.start()
 
 
+def compute_section_entropy_bg(bv):
+    background_task = BGTask(
+        bv, "Computing the entropy of all sections", compute_section_entropy)
+    background_task.start()
+
+
 def run_utils_bg(bv):
     # find entry functions
     find_entry_functions(bv)
 
     # find leaf functions
     find_leaf_functions(bv)
+
+    # compute the entropy of sections
+    compute_section_entropy(bv)
