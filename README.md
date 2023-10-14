@@ -1,4 +1,4 @@
-# Obfuscation Detection (v1.9)
+# Obfuscation Detection (v2.0)
 Author: **Tim Blazytko**
 
 _Automatically detect obfuscated code and other interesting code constructs_
@@ -178,6 +178,15 @@ This helper identifies functions that do not call other functions. These kinds o
 * are outlined by the compiler to implement functionalities utilized across various code locations
 * are trampolines to other functions
 * are part of code obfuscation schemes (e.g., outlined computations for control-flow obfuscation)
+  
+
+### Section Entropy
+
+This helper evaluates the entropy of each section. Entropy is a statistical measure of randomness with values ranging between 0 and 8. Sections with an entropy close to 8 indicate a high degree of randomness and can hint at:
+
+* packed or compressed code
+* encrypted data or code
+* random data
 
 
 ## Contact

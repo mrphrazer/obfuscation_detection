@@ -1,6 +1,6 @@
 from binaryninja import highlight
 
-from .utils import *
+from .helpers import *
 
 
 def find_flattened_functions(bv):
@@ -147,6 +147,7 @@ def find_leaf_functions(bv):
         if len(f.callees) == 0 and sum(1 for _ in f.instructions) > 1:
             print(
                 f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
+
 
 
 def find_rc4(bv):

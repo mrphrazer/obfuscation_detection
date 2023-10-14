@@ -15,13 +15,13 @@ from .obfuscation_detection import (
     run_utils_bg,
     find_entry_functions_bg,
     find_leaf_functions_bg,
+    compute_section_entropy_bg,
     find_rc4_bg
 )
 
-
 # Heuristics
 PluginCommand.register("Obfuscation Detection\\All",
-                       "Detects obfuscated code via heuristics", detect_obfuscation_bg)
+                       "Runs all detection heuristics", detect_obfuscation_bg)
 
 PluginCommand.register("Obfuscation Detection\\Flattened Functions",
                        "Heuristic to detect flattened functions", find_flattened_functions_bg)
@@ -56,6 +56,9 @@ PluginCommand.register("Obfuscation Detection\\Utils\\Entry Functions",
 
 PluginCommand.register("Obfuscation Detection\\Utils\\Leaf Functions",
                        "Detects functions without callees", find_leaf_functions_bg)
+
+PluginCommand.register("Obfuscation Detection\\Utils\\Section Entropy",
+                       "Computes the entropy of all sections", compute_section_entropy_bg)
 
 PluginCommand.register("Obfuscation Detection\\Utils\\RC4 Implementations",
                        "Detects functions which potentially implement RC4 algorithms", find_rc4_bg)
