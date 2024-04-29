@@ -213,7 +213,7 @@ This helper evaluates the entropy of each section. Entropy is a statistical meas
 
 This helper detects potential RC4 algorithm implementations by employing heuristic markers typically associated with RC4's Key Scheduling Algorithm (KSA) and Pseudo-Random Generation Algorithm (PRGA). RC4 is widely used in malware for purposes such as:
 
-* decrypting strings and other data payloads*
+* decrypting strings and other data payloads
 * obfuscating command and control (C&C) communications
 
 
