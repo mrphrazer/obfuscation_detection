@@ -140,6 +140,26 @@ The heuristic for most called functions identifies the top 10% of functions with
 * library functions in statically linked binaries
 
 
+### High Loop Frequency
+
+The heuristic identifies functions with a high number of loops. These kind of functions might implement
+
+* a complex parsing logic for structured data formats
+* intensive algorithmic computations
+
+The heuristic also helps pinpointing potential performance bottlenecks.
+
+
+### Irreducible Loops
+
+The heuristic identifies functions with rare and complex loop structures that typically suggest
+
+* aggressive compiler optimizations
+* hand-written assembly
+* usage of goto statements
+* obfuscated code
+
+
 ### XOR Decryption Loops
 
 The heuristic identifies functions which perform an XOR operation with a constant inside of a loop. This way, the heuristic can identify
@@ -187,6 +207,14 @@ This helper evaluates the entropy of each section. Entropy is a statistical meas
 * packed or compressed code
 * encrypted data or code
 * random data
+
+
+### RC4
+
+This helper detects potential RC4 algorithm implementations by employing heuristic markers typically associated with RC4's Key Scheduling Algorithm (KSA) and Pseudo-Random Generation Algorithm (PRGA). RC4 is widely used in malware for purposes such as:
+
+* decrypting strings and other data payloads*
+* obfuscating command and control (C&C) communications
 
 
 ## Contact
