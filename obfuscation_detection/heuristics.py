@@ -1,6 +1,8 @@
 from binaryninja import highlight
 
 from .helpers import *
+from .loop_analysis import (compute_irreducible_loops,
+                            compute_number_of_natural_loops)
 
 
 def find_flattened_functions(bv):
@@ -124,3 +126,59 @@ def find_complex_arithmetic_expressions(bv):
         if score != 0:
             print(
                 f"Function {hex(f.start)} ({(f.name)}) has {score} instructions that use complex arithmetic expressions.")
+
+
+def find_entry_functions(bv):
+    print("=" * 80)
+    print("Functions without callers:")
+
+    for f in bv.functions:
+        if len(f.callers) != 0:
+            continue
+
+        print(
+            f"Function {hex(f.start)} ({(f.name)}) has no known callers.")
+
+
+def find_leaf_functions(bv):
+    print("=" * 80)
+    print("Functions without callees:")
+
+    for f in bv.functions:
+        # no callees and at least two instructions
+        if len(f.callees) == 0 and sum(1 for _ in f.instructions) > 1:
+            print(
+                f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
+
+
+def find_rc4(bv):
+    print("=" * 80)
+    print("Potential RC4 Implementations:")
+
+    for f in bv.functions:
+        if find_rc4_ksa(bv, f):
+            print(
+                f"Function {f.name} ({hex(f.start)}) might implement RC4-KSA.")
+        if find_rc4_prga(bv, f):
+            print(
+                f"Function {f.name} ({hex(f.start)}) might implement RC4-PRGA.")
+
+
+def find_loop_frequency_functions(bv):
+    print("=" * 80)
+    print("Loop Frequency")
+
+    # print top 10% (iterate in descending order)
+    for f, score in get_top_10_functions(bv.functions, compute_number_of_natural_loops):
+        print(
+            f"Function {hex(f.start)} ({f.name}) contains {score} loops.")
+
+
+def find_irreducible_loops(bv):
+    print("=" * 80)
+    print("Irreducible Loops")
+
+    # print top 10% (iterate in descending order)
+    for f, score in filter(lambda x: x[1] > 0, get_top_10_functions(bv.functions, lambda x: len(compute_irreducible_loops(x)))):
+        print(
+            f"Function {hex(f.start)} ({f.name}) contains {score} irreducible loops.")

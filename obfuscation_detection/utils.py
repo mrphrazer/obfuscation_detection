@@ -35,3 +35,16 @@ def compute_section_entropy(bv):
     }
     for section, score in sort_elements(section_entropies.keys(), lambda x: section_entropies[x]):
         print(f"Section {section.name} has an entropy of {score:.2f}.")
+
+
+def find_rc4(bv):
+    print("=" * 80)
+    print("Potential RC4 Implementations:")
+
+    for f in bv.functions:
+        if find_rc4_ksa(bv, f):
+            print(
+                f"Function {f.name} ({hex(f.start)}) might implement RC4-KSA.")
+        if find_rc4_prga(bv, f):
+            print(
+                f"Function {f.name} ({hex(f.start)}) might implement RC4-PRGA.")
