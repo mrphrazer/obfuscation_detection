@@ -10,6 +10,8 @@ from .obfuscation_detection import (
     find_most_called_functions_bg,
     find_uncommon_instruction_sequences_bg,
     find_xor_decryption_loops_bg,
+    find_irreducible_loops_bg,
+    find_loop_frequency_functions_bg,
     find_complex_arithmetic_expressions_bg,
     # utils
     run_utils_bg,
@@ -40,6 +42,12 @@ PluginCommand.register("Obfuscation Detection\\Uncommon Instruction Sequences",
 
 PluginCommand.register("Obfuscation Detection\\Most Called Functions",
                        "Detects the most called functions", find_most_called_functions_bg)
+
+PluginCommand.register("Obfuscation Detection\\Loop Frequency",
+                       "Detects functions with a high number of loops", find_loop_frequency_functions_bg)
+
+PluginCommand.register("Obfuscation Detection\\Irreducible Loops",
+                       "Detects functions with irreducible loops", find_irreducible_loops_bg)
 
 PluginCommand.register("Obfuscation Detection\\XOR Decryption Loops",
                        "Detects functions with XOR decryption loops", find_xor_decryption_loops_bg)

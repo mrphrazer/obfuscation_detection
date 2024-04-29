@@ -1,6 +1,8 @@
 from binaryninja import highlight
 
 from .helpers import *
+from .loop_analysis import (compute_irreducible_loops,
+                            compute_number_of_natural_loops)
 
 
 def find_flattened_functions(bv):
@@ -149,7 +151,6 @@ def find_leaf_functions(bv):
                 f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
 
 
-
 def find_rc4(bv):
     print("=" * 80)
     print("Potential RC4 Implementations:")
@@ -161,3 +162,23 @@ def find_rc4(bv):
         if find_rc4_prga(bv, f):
             print(
                 f"Function {f.name} ({hex(f.start)}) might implement RC4-PRGA.")
+
+
+def find_loop_frequency_functions(bv):
+    print("=" * 80)
+    print("Loop Frequency")
+
+    # print top 10% (iterate in descending order)
+    for f, score in get_top_10_functions(bv.functions, compute_number_of_natural_loops):
+        print(
+            f"Function {hex(f.start)} ({f.name}) contains {score} loops.")
+
+
+def find_irreducible_loops(bv):
+    print("=" * 80)
+    print("Irreducible Loops")
+
+    # print top 10% (iterate in descending order)
+    for f, score in filter(lambda x: x[1] > 0, get_top_10_functions(bv.functions, lambda x: len(compute_irreducible_loops(x)))):
+        print(
+            f"Function {hex(f.start)} ({f.name}) contains {score} irreducible loops.")

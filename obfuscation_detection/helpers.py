@@ -2,11 +2,11 @@ from collections import Counter
 from math import ceil, log2
 
 from binaryninja import highlevelil
-from binaryninja.enums import LowLevelILOperation, HighLevelILOperation
+from binaryninja.enums import HighLevelILOperation, LowLevelILOperation
 
-from .loop_analysis import compute_blocks_in_loops, compute_number_of_loops
+from .loop_analysis import (compute_blocks_in_natural_loops,
+                            compute_number_of_natural_loops)
 from .ngrams import determine_ngram_database
-
 
 # initialize operations
 ARITHMETIC_OPERATION = set([
@@ -98,7 +98,7 @@ def computes_xor_const(llil_instr):
 
 def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
     # walk over all blocks which are part of a loop
-    for block in compute_blocks_in_loops(function):
+    for block in compute_blocks_in_natural_loops(function):
         # walk over all instructions
         addr = block.start
         while addr < block.end:
@@ -115,7 +115,7 @@ def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
 
 def find_rc4_ksa(bv, function):
     # function has two natural loops
-    if not compute_number_of_loops(function) == 2:
+    if not compute_number_of_natural_loops(function) == 2:
         return False
     # contains at least once the constant 0x100
     for instr in function.instructions:
