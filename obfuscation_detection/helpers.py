@@ -114,8 +114,15 @@ def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
 
 
 def find_rc4_ksa(bv, function):
-    # function has two natural loops
-    if not compute_number_of_natural_loops(function) == 2:
+    """
+    Tries to identify implementations of RC4's key scheduling algorihm (KSA)
+    
+    It checks if a function 
+    - has at two loops
+    - contains the constant 0x100.
+    """
+    # function has at least two natural loops
+    if  compute_number_of_natural_loops(function) != 2:
         return False
     # contains at least once the constant 0x100
     for instr in function.instructions:
