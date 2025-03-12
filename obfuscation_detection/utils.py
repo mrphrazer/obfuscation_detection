@@ -26,7 +26,7 @@ def find_leaf_functions(bv):
 
 def find_recursive_functions(bv):
     print("=" * 80)
-    print("Functions recursive functions:")
+    print("Recursive functions:")
 
     for f in bv.functions:
         # no callees and at least two instructions
