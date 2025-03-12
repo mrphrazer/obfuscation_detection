@@ -24,6 +24,17 @@ def find_leaf_functions(bv):
                 f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
 
 
+def find_recursive_functions(bv):
+    print("=" * 80)
+    print("Functions recursive functions:")
+
+    for f in bv.functions:
+        # no callees and at least two instructions
+        if f in f.callees:
+            print(
+                f"Function {hex(f.start)} ({(f.name)}) is recursive.")
+
+
 def compute_section_entropy(bv):
     print("=" * 80)
     print("Sections and their entropy:")

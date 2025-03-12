@@ -1,4 +1,4 @@
-# Obfuscation Detection (v2.1)
+# Obfuscation Detection (v2.2)
 Author: **Tim Blazytko**
 
 _Automatically detect obfuscated code and other interesting code constructs_
@@ -198,7 +198,17 @@ This helper identifies functions that do not call other functions. These kinds o
 * are outlined by the compiler to implement functionalities utilized across various code locations
 * are trampolines to other functions
 * are part of code obfuscation schemes (e.g., outlined computations for control-flow obfuscation)
-  
+
+
+### Recursive Functions
+
+This helper identifies recursive functions---functions that directly or indirectly call themselves. Recursive functions may indicate:
+
+* algorithmic implementations such as tree or graph traversal
+* obfuscated code designed to complicate static analysis
+* implementations of mathematical algorithms or complex parsing routines
+* potential stack overflow vulnerabilities due to deep recursion
+
 
 ### Section Entropy
 

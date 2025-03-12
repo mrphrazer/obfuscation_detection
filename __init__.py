@@ -17,6 +17,7 @@ from .obfuscation_detection import (
     run_utils_bg,
     find_entry_functions_bg,
     find_leaf_functions_bg,
+    find_recursive_functions_bg,
     compute_section_entropy_bg,
     find_rc4_bg
 )
@@ -64,6 +65,9 @@ PluginCommand.register("Obfuscation Detection\\Utils\\Entry Functions",
 
 PluginCommand.register("Obfuscation Detection\\Utils\\Leaf Functions",
                        "Detects functions without callees", find_leaf_functions_bg)
+
+PluginCommand.register("Obfuscation Detection\\Utils\\Recursive Functions",
+                       "Detects recursive functions", find_recursive_functions_bg)
 
 PluginCommand.register("Obfuscation Detection\\Utils\\Section Entropy",
                        "Computes the entropy of all sections", compute_section_entropy_bg)

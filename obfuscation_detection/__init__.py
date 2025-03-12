@@ -50,6 +50,7 @@ def find_most_called_functions_bg(bv):
         bv, "Finding most called functions", find_most_called_functions)
     background_task.start()
 
+
 def find_loop_frequency_functions_bg(bv):
     background_task = BGTask(
         bv, "Finding functions with a high loop frequency", find_loop_frequency_functions)
@@ -127,6 +128,12 @@ def find_leaf_functions_bg(bv):
     background_task.start()
 
 
+def find_recursive_functions_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions with recursive calls (recursive functions)", find_recursive_functions)
+    background_task.start()
+
+
 def compute_section_entropy_bg(bv):
     background_task = BGTask(
         bv, "Computing the entropy of all sections", compute_section_entropy)
@@ -138,12 +145,16 @@ def find_rc4_bg(bv):
         bv, "Finding functions which potentially implement RC4", find_rc4)
     background_task.start()
 
+
 def run_utils_bg(bv):
     # find entry functions
     find_entry_functions(bv)
 
     # find leaf functions
     find_leaf_functions(bv)
+
+    # find recursive functions
+    find_recursive_functions(bv)
 
     # compute the entropy of sections
     compute_section_entropy(bv)
