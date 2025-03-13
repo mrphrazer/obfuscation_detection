@@ -180,9 +180,9 @@ The heuristic identifies functions in which the expressions have more than one a
 
 ### Duplicated Basic Blocks
 
-This feature scans the basic blocks of each function and generates a fuzzy hash from their instruction sequences. By comparing these hashes, it identifies functions that contain duplicate or near-duplicate blocks. This helps pinpoint:
+This feature scans the basic blocks of each function and generates a fuzzy hash from their opcode sequences. By comparing these hashes, it identifies functions that contain duplicate or near-duplicate blocks. This helps pinpointing
 
-* repeated code snippets within or across functions
+* repeated code snippets within functions
 * compiler-generated duplicates (e.g., inlined code, loop unrolling)
 * potential obfuscation patterns involving replicated blocks
 
