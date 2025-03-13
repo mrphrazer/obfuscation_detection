@@ -44,8 +44,9 @@ def find_duplicated_basic_blocks(bv):
 
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, count_duplicated_basic_blocks):
-        print(
-            f"Function {hex(f.start)} ({f.name}) contains {score} duplicated basic blocks.")
+        if score != 0:
+            print(
+                f"Function {hex(f.start)} ({f.name}) contains {score} duplicated basic blocks.")
 
 
 def find_instruction_overlapping(bv):
