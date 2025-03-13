@@ -116,13 +116,13 @@ def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
 def find_rc4_ksa(bv, function):
     """
     Tries to identify implementations of RC4's key scheduling algorihm (KSA)
-    
+
     It checks if a function 
     - has at two loops
     - contains the constant 0x100.
     """
     # function has at least two natural loops
-    if  compute_number_of_natural_loops(function) != 2:
+    if compute_number_of_natural_loops(function) != 2:
         return False
     # contains at least once the constant 0x100
     for instr in function.instructions:
@@ -193,27 +193,58 @@ def sliding_window(l, window_size):
         yield l[index:index + window_size]
 
 
+def get_opcode_from_disassembly(instruction):
+    """Return the opcode of an assembly instruction"""
+    # ensure instruction has opcode
+    if len(instruction) == 0 or len(instruction[0]) == 0:
+        return ""
+    # return instruction mnemomic
+    return str(instruction[0][0]).replace(" ", "")
+
+
+def get_opcode_from_llil(instr):
+    """Returns the opcode of an LLIL instruction"""
+    # for register assignments, check opcode
+    if instr.operation == LowLevelILOperation.LLIL_SET_REG:
+        # return LLIL_SET_REG is RHS is a constant or register (terminal)
+        if instr.src.operation in [LowLevelILOperation.LLIL_CONST, LowLevelILOperation.LLIL_CONST_PTR,
+                                   LowLevelILOperation.LLIL_REG]:
+            return str(instr.operation)
+        # return operator of RHS
+        return str(instr.src.operation)
+    return str(instr.operation)
+
+
+def compute_basic_block_signature(basic_block):
+    """
+    Compute a simple string signature for a basic block by concatenating the opcodes
+    of all instructions in that block.
+    """
+    return "".join(get_opcode_from_disassembly(instr) for instr in basic_block)
+
+
+def count_duplicated_basic_blocks(function):
+    """
+    Calculate how many basic blocks in a function are duplicates based on their
+    opcode signatures.
+
+    This metric is computed by:
+      1) Generating a unique signature for each basic block (via opcodes only).
+      2) Counting the total number of blocks.
+      3) Counting the distinct signatures.
+      4) The difference between the total number of blocks and the number of
+         distinct signatures is the number of duplicated blocks.
+
+    For example, if you have 10 basic blocks in total but only 7 unique signatures,
+    then there are 3 duplicated blocks.
+    """
+    num_blocks = len(function.basic_blocks)
+    num_distinct_sigs = len({compute_basic_block_signature(bb)
+                            for bb in function.basic_blocks})
+    return num_blocks - num_distinct_sigs
+
+
 def calc_ngrams(function, n, use_llil):
-    def get_opcode_from_disassembly(instruction):
-        """Return the opcode of an assembly instruction"""
-        # ensure instruction has opcode
-        if len(instruction) == 0 or len(instruction[0]) == 0:
-            return ""
-        # return instruction mnemomic
-        return str(instruction[0][0]).replace(" ", "")
-
-    def get_opcode_from_llil(instr):
-        """Returns the opcode of an LLIL instruction"""
-        # for register assignments, check opcode
-        if instr.operation == LowLevelILOperation.LLIL_SET_REG:
-            # return LLIL_SET_REG is RHS is a constant or register (terminal)
-            if instr.src.operation in [LowLevelILOperation.LLIL_CONST, LowLevelILOperation.LLIL_CONST_PTR,
-                                       LowLevelILOperation.LLIL_REG]:
-                return str(instr.operation)
-            # return operator of RHS
-            return str(instr.src.operation)
-        return str(instr.operation)
-
     # if function too complex, return empty counter
     if function.analysis_skipped:
         return Counter()

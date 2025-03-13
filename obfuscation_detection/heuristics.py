@@ -38,6 +38,16 @@ def find_large_basic_blocks(bv):
             f"Basic blocks in function {hex(f.start)} ({f.name}) contain on average {ceil(score)} instructions.")
 
 
+def find_duplicated_basic_blocks(bv):
+    print("=" * 80)
+    print("Duplicated Basic Blocks")
+
+    # print top 10% (iterate in descending order)
+    for f, score in get_top_10_functions(bv.functions, count_duplicated_basic_blocks):
+        print(
+            f"Function {hex(f.start)} ({f.name}) contains {score} duplicated basic blocks.")
+
+
 def find_instruction_overlapping(bv):
     print("=" * 80)
     print("Instruction Overlapping")

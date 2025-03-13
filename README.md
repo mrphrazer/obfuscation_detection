@@ -178,6 +178,15 @@ The heuristic identifies functions in which the expressions have more than one a
 * cryptographic implementations
 
 
+### Duplicated Basic Blocks
+
+This feature scans the basic blocks of each function and generates a fuzzy hash from their instruction sequences. By comparing these hashes, it identifies functions that contain duplicate or near-duplicate blocks. This helps pinpoint:
+
+* repeated code snippets within or across functions
+* compiler-generated duplicates (e.g., inlined code, loop unrolling)
+* potential obfuscation patterns involving replicated blocks
+
+
 ## Utils
 
 Contrary to the detection heuristics which target a wider scope of code, the plugin also implements various helpers which aim to identify functions with a narrower scope. In the following, we describe these helpers and explain their characteristics.

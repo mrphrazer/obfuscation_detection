@@ -75,6 +75,12 @@ def find_complex_arithmetic_expressions_bg(bv):
     background_task.start()
 
 
+def find_duplicated_basic_blocks_bg(bv):
+    background_task = BGTask(
+        bv, "Finding functions with duplicated basic blocks", find_duplicated_basic_blocks)
+    background_task.start()
+
+
 def detect_obfuscation_bg(bv):
     background_task = BGTask(
         bv, "Detecting obfuscated functions", detect_obfuscation)
@@ -110,7 +116,10 @@ def detect_obfuscation(bv):
     find_xor_decryption_loops(bv)
 
     # find expressions that include boolean and arithmetic operations
-    find_complex_arithmetic_expressions(bv)
+    find_complex_arithmetic_expressions(bv),
+
+    # find functions with duplicated blocks
+    find_duplicated_basic_blocks(bv)
 
 
 # utils
