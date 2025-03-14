@@ -1,4 +1,4 @@
-# Obfuscation Detection (v2.2)
+# Obfuscation Detection (v2.3)
 Author: **Tim Blazytko**
 
 _Automatically detect obfuscated code and other interesting code constructs_
@@ -178,13 +178,14 @@ The heuristic identifies functions in which the expressions have more than one a
 * cryptographic implementations
 
 
-### Duplicated Basic Blocks
+### Duplicate Subgraphs
 
-This feature scans the basic blocks of each function and generates a fuzzy hash from their opcode sequences. By comparing these hashes, it identifies functions that contain duplicate or near-duplicate blocks. This helps pinpointing
+The heuristic uses an iterative context-hashing approach to detect repeated multi-block structures within each function’s control-flow graph. By comparing each block’s opcode signature along with the signatures of its successors, the heuristic identifies subgraphs that are duplicated or near-duplicated in a single function. This helps pinpoint:
 
-* repeated code snippets within functions
-* compiler-generated duplicates (e.g., inlined code, loop unrolling)
-* potential obfuscation patterns involving replicated blocks
+* obfuscation stubs like small state machines or dispatcher blocks cloned multiple times
+* unrolled or inlined loops introduced by compiler optimizations
+* multi-way branching logic like range dividers and decision trees
+* repeated cryptographic or checksumming stubs
 
 
 ## Utils

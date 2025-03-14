@@ -1,4 +1,5 @@
 from collections import Counter
+from hashlib import md5
 from math import ceil, log2
 
 from binaryninja import highlevelil
@@ -215,33 +216,115 @@ def get_opcode_from_llil(instr):
     return str(instr.operation)
 
 
-def compute_basic_block_signature(basic_block):
+def compute_local_signature(basic_block):
     """
-    Compute a simple string signature for a basic block by concatenating the opcodes
-    of all instructions in that block.
+    Compute a simple, opcode-based signature for a single basic block.
+
+    In many real-world scenarios, this opcode-based approach is
+    sufficiently effective and offers good performance. If needed, this step can 
+    be extended with more advanced normalization techniques (e.g., fuzzy hashing,
+    register renaming).
     """
     return "".join(get_opcode_from_disassembly(instr) for instr in basic_block)
 
 
-def count_duplicated_basic_blocks(function):
+def compute_context_signatures(function, num_iterations):
     """
-    Calculate how many basic blocks in a function are duplicates based on their
-    opcode signatures.
+    Iteratively compute 'context signatures' for each basic block in 'function'
+    up to a specified depth (num_iterations).
 
-    This metric is computed by:
-      1) Generating a unique signature for each basic block (via opcodes only).
-      2) Counting the total number of blocks.
-      3) Counting the distinct signatures.
-      4) The difference between the total number of blocks and the number of
-         distinct signatures is the number of duplicated blocks.
+    ALGORITHM OVERVIEW:
+    -------------------
+    1) Local Signatures (Iteration 0):
+       - First, we compute a 'local signature' for each basic block by looking at
+         that block's instructions alone. This can be done in any manner:
+         e.g., naive opcode concatenation, fuzzy hashing, or IR-based hashing.
 
-    For example, if you have 10 basic blocks in total but only 7 unique signatures,
-    then there are 3 duplicated blocks.
+    2) Context Signatures (Iterations 1..n):
+       - For each iteration i in [1..num_iterations]:
+         - For each block b, gather the previous iteration's context signature of b,
+           plus the context signatures of b's successors (sorted to avoid ordering
+           differences).
+         - Concatenate them into a single string, then optionally hash it (e.g., MD5).
+         - This becomes the new context signature for iteration i.
+
+       - Each round includes more of the CFG neighborhood, so after i iterations,
+         a block's context signature reflects up to i levels of successors.
+
+    3) Loops and Fixed Depth:
+       - In the presence of loops, we do NOT attempt to keep iterating until a
+         full fixpoint. Instead, we use a fixed num_iterations. Blocks thus describe
+         their 'context' to a depth of n. For detecting stable signatures, one could
+         iteratively check for convergence, but a fixed depth is often sufficient.
+
+    4) Output:
+       - Returns a dictionary mapping each basic block to its final context signature
+         after num_iterations.
+
+    Why it works:
+    -------------
+    - If two blocks share identical local code and identical structure (and code) of
+      their successors up to depth n, they will end up with the same context signature.
+    - This helps reveal repeated subgraphs or code patterns within the same function.
     """
-    num_blocks = len(function.basic_blocks)
-    num_distinct_sigs = len({compute_basic_block_signature(bb)
-                            for bb in function.basic_blocks})
-    return num_blocks - num_distinct_sigs
+
+    # compute local (base) signatures for all blocks
+    local_signatures = {}
+    for bb in function.basic_blocks:
+        local_signatures[bb] = compute_local_signature(bb)
+
+    # for iteration 0, the context signatures are just the local signatures
+    context_signatures = local_signatures.copy()
+
+    # iterative context hashing
+    for _ in range(num_iterations):
+        new_context_signatures = {}
+
+        for bb in function.basic_blocks:
+            # gather the (current) context signatures of all successors
+            succ_sigs = [context_signatures[outgoing_edge.target]
+                         for outgoing_edge in bb.outgoing_edges]
+            # sort the successor signatures to ensure a canonical order
+            succ_sigs.sort()
+
+            # combine this block's context signature with its successors' signatures
+            combined = context_signatures[bb] + "|" + "|".join(succ_sigs)
+
+            # hash the combined string to produce the new signature
+            new_sig = md5(combined.encode()).hexdigest()
+
+            new_context_signatures[bb] = new_sig
+
+        # update our context signatures for the next iteration
+        context_signatures = new_context_signatures
+
+    return context_signatures
+
+
+def count_context_signature_duplicates(function, num_iterations=2):
+    """
+    Compute context signatures for each basic block after 'num_iterations' rounds,
+    then count how many basic blocks/subgraphs share the same final signature.
+
+    Duplicates indicate repeated substructures or patterns within the CFG.
+
+    RETURN:
+      An integer count of how many blocks are 'duplicates' — i.e., how many blocks
+      do NOT have a unique signature. If 5 total blocks share only 3 unique signatures,
+      then (5 - 3) = 2 blocks are duplicates of something else.
+    """
+    final_signatures = compute_context_signatures(function, num_iterations)
+
+    # each block has exactly one final signature in this dict.
+    num_blocks = len(final_signatures)
+
+    # convert to a set to see how many distinct signatures we have
+    unique_signatures = set(final_signatures.values())
+    num_unique_signatures = len(unique_signatures)
+
+    # the number of duplicates is the difference
+    duplicates = num_blocks - num_unique_signatures
+    return duplicates
 
 
 def calc_ngrams(function, n, use_llil):

@@ -75,9 +75,9 @@ def find_complex_arithmetic_expressions_bg(bv):
     background_task.start()
 
 
-def find_duplicated_basic_blocks_bg(bv):
+def find_duplicate_subgraphs_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions with duplicated basic blocks", find_duplicated_basic_blocks)
+        bv, "Finding functions with duplicate subgraphs", find_duplicated_subraphs)
     background_task.start()
 
 
@@ -118,13 +118,11 @@ def detect_obfuscation(bv):
     # find expressions that include boolean and arithmetic operations
     find_complex_arithmetic_expressions(bv),
 
-    # find functions with duplicated blocks
-    find_duplicated_basic_blocks(bv)
+    # find functions with duplicate subgraphs
+    find_duplicated_subraphs(bv)
 
 
 # utils
-
-
 def find_entry_functions_bg(bv):
     background_task = BGTask(
         bv, "Finding functions without callers (entry functions)", find_entry_functions)

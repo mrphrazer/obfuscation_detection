@@ -13,7 +13,7 @@ from .obfuscation_detection import (
     find_irreducible_loops_bg,
     find_loop_frequency_functions_bg,
     find_complex_arithmetic_expressions_bg,
-    find_duplicated_basic_blocks_bg,
+    find_duplicate_subgraphs_bg,
     # utils
     run_utils_bg,
     find_entry_functions_bg,
@@ -57,8 +57,8 @@ PluginCommand.register("Obfuscation Detection\\XOR Decryption Loops",
 PluginCommand.register("Obfuscation Detection\\Arithmetic Complexity",
                        "Detects functions with complex arithmetic expressions", find_complex_arithmetic_expressions_bg)
 
-PluginCommand.register("Obfuscation Detection\\Duplicated Basic Blocks",
-                       "Detects functions with duplicated basic blocks", find_duplicated_basic_blocks_bg)
+PluginCommand.register("Obfuscation Detection\\Duplicate Subgraphs",
+                       "Detects functions with duplicate subgraphs", find_duplicate_subgraphs_bg)
 
 # Utils
 PluginCommand.register("Obfuscation Detection\\Utils\\All",
