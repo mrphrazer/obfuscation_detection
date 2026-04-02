@@ -31,6 +31,7 @@ Some example use cases can be found in [examples](./examples). Furthermore, the 
 * highlights disaligned instructions in Binary Ninja's graph view
 * efficient and architecture-agnostic implementation
 * runs as a background task
+* automatically tags identified functions with the corresponding heuristic
 * can be used in UI and headless mode
 
 

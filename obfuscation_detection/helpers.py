@@ -446,3 +446,27 @@ def sort_elements(iterator, scoring_function):
     # yield in descending order
     for element, score in list(reversed(sorted_elements)):
         yield element, score
+
+
+# consistent icon for all heuristic tag types
+HEURISTIC_TAG_ICON = "🏷️"
+
+
+def get_or_create_tag_type(bv, name):
+    """Get existing tag type or create it."""
+    if name not in bv.tag_types:
+        bv.create_tag_type(name, HEURISTIC_TAG_ICON)
+
+
+def tag_function(bv, function, tag_type_name, data=""):
+    """Tag a function with a heuristic tag type."""
+    get_or_create_tag_type(bv, tag_type_name)
+    function.add_tag(tag_type_name, data)
+
+
+def clear_heuristic_tags(bv, tag_type_name):
+    """Remove all function tags of a given type before re-running."""
+    if tag_type_name not in bv.tag_types:
+        return
+    for f in bv.functions:
+        f.remove_user_function_tags_of_type(tag_type_name)

@@ -8,6 +8,7 @@ from .loop_analysis import (compute_irreducible_loops,
 def find_flattened_functions(bv):
     print("=" * 80)
     print("Control Flow Flattening")
+    clear_heuristic_tags(bv, "Heuristic: Control Flow Flattening")
 
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, calc_flattening_score):
@@ -16,37 +17,44 @@ def find_flattened_functions(bv):
             continue
         print(
             f"Function {hex(f.start)} ({f.name}) has a flattening score of {score}.")
+        tag_function(bv, f, "Heuristic: Control Flow Flattening", f"score: {score:.2f}")
 
 
 def find_complex_functions(bv):
     print("=" * 80)
     print("Cyclomatic Complexity")
+    clear_heuristic_tags(bv, "Heuristic: Cyclomatic Complexity")
 
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, calc_cyclomatic_complexity):
         print(
             f"Function {hex(f.start)} ({f.name}) has a cyclomatic complexity of {score}.")
+        tag_function(bv, f, "Heuristic: Cyclomatic Complexity", f"complexity: {score}")
 
 
 def find_large_basic_blocks(bv):
     print("=" * 80)
     print("Large Basic Blocks")
+    clear_heuristic_tags(bv, "Heuristic: Large Basic Blocks")
 
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, calc_average_instructions_per_block):
         print(
             f"Basic blocks in function {hex(f.start)} ({f.name}) contain on average {ceil(score)} instructions.")
+        tag_function(bv, f, "Heuristic: Large Basic Blocks", f"avg: {ceil(score)} instr/block")
 
 
 def find_duplicated_subraphs(bv):
     print("=" * 80)
     print("Duplicate Subgraphs")
+    clear_heuristic_tags(bv, "Heuristic: Duplicate Subgraphs")
 
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, count_context_signature_duplicates):
         if score != 0:
             print(
                 f"Function {hex(f.start)} ({f.name}) contains {score} duplicate subgraphs.")
+            tag_function(bv, f, "Heuristic: Duplicate Subgraphs", f"duplicates: {score}")
 
 
 def find_instruction_overlapping(bv):
@@ -90,39 +98,48 @@ def find_instruction_overlapping(bv):
             # add to set of overlapping functions
             functions_with_overlapping.add(function.start)
 
+    clear_heuristic_tags(bv, "Heuristic: Instruction Overlapping")
     for address in sorted(functions_with_overlapping):
+        f = bv.get_function_at(address)
         print(
-            f"Overlapping instructions in function {hex(address)} ({bv.get_function_at(address).name}).")
+            f"Overlapping instructions in function {hex(address)} ({f.name}).")
+        tag_function(bv, f, "Heuristic: Instruction Overlapping", "overlapping instructions")
 
 
 def find_uncommon_instruction_sequences(bv):
     print("=" * 80)
     print("Uncommon Instruction Sequences")
+    clear_heuristic_tags(bv, "Heuristic: Uncommon Sequences")
 
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, calc_uncommon_instruction_sequences_score):
         print(
             f"Function {hex(f.start)} ({f.name}) has an uncommon instruction sequences score of {score}.")
+        tag_function(bv, f, "Heuristic: Uncommon Sequences", f"score: {score}")
 
 
 def find_most_called_functions(bv):
     print("=" * 80)
     print("Most Called Functions")
+    clear_heuristic_tags(bv, "Heuristic: Most Called")
 
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, lambda f: len(f.callers)):
         print(
             f"Function {hex(f.start)} ({f.name}) is called from {score} different functions.")
+        tag_function(bv, f, "Heuristic: Most Called", f"callers: {score}")
 
 
 def find_xor_decryption_loops(bv):
     print("=" * 80)
     print("XOR Decryption Loops")
+    clear_heuristic_tags(bv, "Heuristic: XOR Decryption Loop")
 
     for f in bv.functions:
         if contains_xor_decryption_loop(bv, f):
             print(
                 f"Function {hex(f.start)} ({f.name}) contains a XOR decryption loop with a constant.")
+            tag_function(bv, f, "Heuristic: XOR Decryption Loop", "XOR loop with constant")
 
 
 def find_complex_arithmetic_expressions(bv):
@@ -133,15 +150,18 @@ def find_complex_arithmetic_expressions(bv):
     print("=" * 80)
     print("Functions with complex arithmetic expressions:")
 
+    clear_heuristic_tags(bv, "Heuristic: Complex Arithmetic")
     for f, score in get_top_10_functions(bv.functions, lambda f: calculate_complex_arithmetic_expressions(f)):
         if score != 0:
             print(
                 f"Function {hex(f.start)} ({(f.name)}) has {score} instructions that use complex arithmetic expressions.")
+            tag_function(bv, f, "Heuristic: Complex Arithmetic", f"MBA instructions: {score}")
 
 
 def find_entry_functions(bv):
     print("=" * 80)
     print("Functions without callers:")
+    clear_heuristic_tags(bv, "Heuristic: Entry Function")
 
     for f in bv.functions:
         if len(f.callers) != 0:
@@ -149,47 +169,58 @@ def find_entry_functions(bv):
 
         print(
             f"Function {hex(f.start)} ({(f.name)}) has no known callers.")
+        tag_function(bv, f, "Heuristic: Entry Function", "no known callers")
 
 
 def find_leaf_functions(bv):
     print("=" * 80)
     print("Functions without callees:")
+    clear_heuristic_tags(bv, "Heuristic: Leaf Function")
 
     for f in bv.functions:
         # no callees and at least two instructions
         if len(f.callees) == 0 and sum(1 for _ in f.instructions) > 1:
             print(
                 f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
+            tag_function(bv, f, "Heuristic: Leaf Function", "no known callees")
 
 
 def find_rc4(bv):
     print("=" * 80)
     print("Potential RC4 Implementations:")
+    clear_heuristic_tags(bv, "Heuristic: RC4-KSA")
+    clear_heuristic_tags(bv, "Heuristic: RC4-PRGA")
 
     for f in bv.functions:
         if find_rc4_ksa(bv, f):
             print(
                 f"Function {f.name} ({hex(f.start)}) might implement RC4-KSA.")
+            tag_function(bv, f, "Heuristic: RC4-KSA", "potential RC4 key scheduling")
         if find_rc4_prga(bv, f):
             print(
                 f"Function {f.name} ({hex(f.start)}) might implement RC4-PRGA.")
+            tag_function(bv, f, "Heuristic: RC4-PRGA", "potential RC4 PRGA")
 
 
 def find_loop_frequency_functions(bv):
     print("=" * 80)
     print("Loop Frequency")
+    clear_heuristic_tags(bv, "Heuristic: Loop Frequency")
 
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, compute_number_of_natural_loops):
         print(
             f"Function {hex(f.start)} ({f.name}) contains {score} loops.")
+        tag_function(bv, f, "Heuristic: Loop Frequency", f"loops: {score}")
 
 
 def find_irreducible_loops(bv):
     print("=" * 80)
     print("Irreducible Loops")
+    clear_heuristic_tags(bv, "Heuristic: Irreducible Loops")
 
     # print top 10% (iterate in descending order)
     for f, score in filter(lambda x: x[1] > 0, get_top_10_functions(bv.functions, lambda x: len(compute_irreducible_loops(x)))):
         print(
             f"Function {hex(f.start)} ({f.name}) contains {score} irreducible loops.")
+        tag_function(bv, f, "Heuristic: Irreducible Loops", f"irreducible: {score}")
