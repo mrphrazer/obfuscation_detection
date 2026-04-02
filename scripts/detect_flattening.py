@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import sys
+
+import binaryninja
 from obfuscation_detection.heuristics import find_flattened_functions
-from binaryninja import BinaryViewType
 
 
 # check file arguments
@@ -13,9 +14,7 @@ if len(sys.argv) < 2:
 file_name = sys.argv[1]
 
 # init binary ninja
-bv = BinaryViewType.get_view_of_file(file_name)
-if not file_name.endswith(".bndb"):
-    bv.update_analysis_and_wait()
+bv = binaryninja.load(file_name)
 
 # find flattened functions
 find_flattened_functions(bv)

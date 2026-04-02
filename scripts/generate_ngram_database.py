@@ -5,7 +5,7 @@ from collections import Counter
 from pprint import pformat
 import multiprocessing
 
-from binaryninja import BinaryViewType
+import binaryninja
 
 from obfuscation_detection.utils import calc_global_ngrams
 
@@ -13,9 +13,7 @@ from obfuscation_detection.utils import calc_global_ngrams
 def analyze(binary_file_path):
     print(f"Analyzing file {binary_file_path}.")
     # init binary ninja
-    bv = BinaryViewType.get_view_of_file(binary_file_path)
-    # wait until analysis finishes
-    bv.update_analysis_and_wait()
+    bv = binaryninja.load(binary_file_path)
     # count 3-grams
     return calc_global_ngrams(bv, 3, use_llil=True)
 
