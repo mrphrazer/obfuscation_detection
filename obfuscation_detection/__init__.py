@@ -77,7 +77,7 @@ def find_complex_arithmetic_expressions_bg(bv):
 
 def find_duplicate_subgraphs_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions with duplicate subgraphs", find_duplicated_subraphs)
+        bv, "Finding functions with duplicate subgraphs", find_duplicated_subgraphs)
     background_task.start()
 
 
@@ -119,7 +119,7 @@ def detect_obfuscation(bv):
     find_complex_arithmetic_expressions(bv),
 
     # find functions with duplicate subgraphs
-    find_duplicated_subraphs(bv)
+    find_duplicated_subgraphs(bv)
 
 
 # utils

@@ -12,7 +12,7 @@ def find_entry_functions(bv):
 
         print(
             f"Function {hex(f.start)} ({(f.name)}) has no known callers.")
-        tag_function(bv, f, "Heuristic: Entry Function", "no known callers")
+        tag_function(bv, f, "Heuristic: Entry Function", "no known callers | may indicate: entry point, indirect jump target")
 
 
 def find_leaf_functions(bv):
@@ -25,7 +25,7 @@ def find_leaf_functions(bv):
         if len(f.callees) == 0 and sum(1 for _ in f.instructions) > 1:
             print(
                 f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
-            tag_function(bv, f, "Heuristic: Leaf Function", "no known callees")
+            tag_function(bv, f, "Heuristic: Leaf Function", "no known callees | may indicate: outlined functions, trampolines, obfuscation")
 
 
 def find_recursive_functions(bv):
@@ -38,7 +38,7 @@ def find_recursive_functions(bv):
         if f in f.callees:
             print(
                 f"Function {hex(f.start)} ({(f.name)}) is recursive.")
-            tag_function(bv, f, "Heuristic: Recursive Function", "recursive")
+            tag_function(bv, f, "Heuristic: Recursive Function", "potential self-recursive")
 
 
 def compute_section_entropy(bv):
