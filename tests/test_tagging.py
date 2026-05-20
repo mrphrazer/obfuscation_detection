@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 import pytest
 
 import obfuscation_detection as plugin
-from obfuscation_detection import heuristics, utils
+from obfuscation_detection import heuristics, reports, utils
 from obfuscation_detection.tagging import (
     clear_heuristic_tags,
     tag_function,
@@ -176,7 +176,7 @@ def test_ranked_heuristics_clear_and_apply_expected_tags(
     function = FakeFunction(tags={tag_type: ["old"]})
     bv = FakeBV([function], tag_types={tag_type: object()})
     monkeypatch.setattr(
-        heuristics,
+        reports,
         "get_top_10_functions",
         lambda _functions, _scoring: [(function, score)],
     )
@@ -189,9 +189,7 @@ def test_ranked_heuristics_clear_and_apply_expected_tags(
 def test_xor_decryption_loop_applies_expected_tag(monkeypatch):
     function = FakeFunction(tags={TAG_XOR_DECRYPTION_LOOP: ["old"]})
     bv = FakeBV([function], tag_types={TAG_XOR_DECRYPTION_LOOP: object()})
-    monkeypatch.setattr(
-        heuristics, "contains_xor_decryption_loop", lambda _bv, _f: True
-    )
+    monkeypatch.setattr(reports, "contains_xor_decryption_loop", lambda _bv, _f: True)
 
     heuristics.find_xor_decryption_loops(bv)
 

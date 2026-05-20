@@ -3,10 +3,8 @@ import argparse
 import json
 import sys
 
-from obfuscation_detection.heuristics import (
-    find_flattened_function_reports,
-    find_flattened_functions,
-)
+from obfuscation_detection.heuristics import find_flattened_functions
+from obfuscation_detection.reports import find_flattened_function_reports
 
 
 def parse_args(argv):

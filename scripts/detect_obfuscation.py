@@ -4,7 +4,7 @@ import json
 import sys
 
 from obfuscation_detection import detect_obfuscation
-from obfuscation_detection.heuristics import collect_obfuscation_reports
+from obfuscation_detection.reports import collect_obfuscation_reports
 
 
 def parse_args(argv):

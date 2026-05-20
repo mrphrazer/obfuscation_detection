@@ -3,6 +3,14 @@ from types import SimpleNamespace
 
 import scripts.detect_flattening as detect_flattening
 import scripts.detect_obfuscation as detect_obfuscation
+from obfuscation_detection.tagging import (
+    TAG_COMPLEX_FUNCTION,
+    TAG_CONTROL_FLOW_FLATTENING,
+    TAG_DESC_COMPLEX_FUNCTION,
+    TAG_DESC_CONTROL_FLOW_FLATTENING,
+    TAG_DESC_XOR_DECRYPTION_LOOP,
+    TAG_XOR_DECRYPTION_LOOP,
+)
 
 
 class BinaryView:
@@ -45,13 +53,22 @@ def test_detect_obfuscation_json_emits_sectioned_findings(monkeypatch, capsys):
                     {
                         "address": "0x1000",
                         "name": "main",
+                        "tag_type": TAG_COMPLEX_FUNCTION,
+                        "description": TAG_DESC_COMPLEX_FUNCTION.format(score=7),
                         "cyclomatic_complexity": 7,
                     }
                 ],
             },
             {
                 "name": "XOR Decryption Loops",
-                "findings": [{"address": "0x2000", "name": "decode"}],
+                "findings": [
+                    {
+                        "address": "0x2000",
+                        "name": "decode",
+                        "tag_type": TAG_XOR_DECRYPTION_LOOP,
+                        "description": TAG_DESC_XOR_DECRYPTION_LOOP,
+                    }
+                ],
             },
         ]
 
@@ -74,7 +91,9 @@ def test_detect_obfuscation_json_emits_sectioned_findings(monkeypatch, capsys):
                     {
                         "address": "0x1000",
                         "cyclomatic_complexity": 7,
+                        "description": TAG_DESC_COMPLEX_FUNCTION.format(score=7),
                         "name": "main",
+                        "tag_type": TAG_COMPLEX_FUNCTION,
                     }
                 ],
             },
@@ -83,7 +102,9 @@ def test_detect_obfuscation_json_emits_sectioned_findings(monkeypatch, capsys):
                 "findings": [
                     {
                         "address": "0x2000",
+                        "description": TAG_DESC_XOR_DECRYPTION_LOOP,
                         "name": "decode",
+                        "tag_type": TAG_XOR_DECRYPTION_LOOP,
                     }
                 ],
             },
@@ -100,6 +121,8 @@ def test_detect_flattening_json_emits_structured_function_fields(monkeypatch, ca
             {
                 "address": "0x401000",
                 "name": "dispatcher",
+                "tag_type": TAG_CONTROL_FLOW_FLATTENING,
+                "description": TAG_DESC_CONTROL_FLOW_FLATTENING.format(score=0.75),
                 "flattening_score": 0.75,
             }
         ]
@@ -123,6 +146,10 @@ def test_detect_flattening_json_emits_structured_function_fields(monkeypatch, ca
                     {
                         "address": "0x401000",
                         "name": "dispatcher",
+                        "tag_type": TAG_CONTROL_FLOW_FLATTENING,
+                        "description": TAG_DESC_CONTROL_FLOW_FLATTENING.format(
+                            score=0.75
+                        ),
                         "flattening_score": 0.75,
                     }
                 ],
@@ -151,6 +178,8 @@ def test_detect_flattening_run_json_uses_real_report_helper(monkeypatch):
                 {
                     "address": "0x401000",
                     "name": "dispatcher",
+                    "tag_type": TAG_CONTROL_FLOW_FLATTENING,
+                    "description": TAG_DESC_CONTROL_FLOW_FLATTENING.format(score=0.75),
                     "flattening_score": 0.75,
                 }
             ]
@@ -161,4 +190,12 @@ def test_detect_flattening_run_json_uses_real_report_helper(monkeypatch):
 
     assert detect_flattening.run_json(bv, "sample.bin")["heuristics"][0][
         "findings"
-    ] == [{"address": "0x401000", "name": "dispatcher", "flattening_score": 0.75}]
+    ] == [
+        {
+            "address": "0x401000",
+            "name": "dispatcher",
+            "tag_type": TAG_CONTROL_FLOW_FLATTENING,
+            "description": TAG_DESC_CONTROL_FLOW_FLATTENING.format(score=0.75),
+            "flattening_score": 0.75,
+        }
+    ]
