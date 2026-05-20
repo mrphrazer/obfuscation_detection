@@ -3,8 +3,8 @@ from binaryninja.plugin import BackgroundTaskThread
 from .heuristics import (
     find_complex_arithmetic_expressions,
     find_complex_functions,
-    find_duplicated_subraphs,
-    find_flattened_functions,
+    find_duplicated_subgraphs,
+    find_state_machines,
     find_instruction_overlapping,
     find_irreducible_loops,
     find_large_basic_blocks,
@@ -33,10 +33,8 @@ class BGTask(BackgroundTaskThread):
 
 
 # heuristics
-def find_flattened_functions_bg(bv):
-    background_task = BGTask(
-        bv, "Finding flattened functions", find_flattened_functions
-    )
+def find_state_machines_bg(bv):
+    background_task = BGTask(bv, "Finding state machines", find_state_machines)
     background_task.start()
 
 
@@ -53,7 +51,7 @@ def find_large_basic_blocks_bg(bv):
 def find_uncommon_instruction_sequences_bg(bv):
     background_task = BGTask(
         bv,
-        "Finding uncomming instruction sequences",
+        "Finding uncommon instruction sequences",
         find_uncommon_instruction_sequences,
     )
     background_task.start()
@@ -107,19 +105,28 @@ def find_complex_arithmetic_expressions_bg(bv):
 
 def find_duplicate_subgraphs_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions with duplicate subgraphs", find_duplicated_subraphs
+        bv, "Finding functions with duplicate subgraphs", find_duplicated_subgraphs
     )
     background_task.start()
 
 
-def detect_obfuscation_bg(bv):
-    background_task = BGTask(bv, "Detecting obfuscated functions", detect_obfuscation)
+def run_heuristics_and_utils_bg(bv):
+    background_task = BGTask(
+        bv,
+        "Running detection heuristics and utility detections",
+        run_heuristics_and_utils,
+    )
     background_task.start()
 
 
-def detect_obfuscation(bv):
-    # find flattened functions
-    find_flattened_functions(bv)
+def run_heuristics_and_utils(bv):
+    run_heuristics(bv)
+    run_utils(bv)
+
+
+def run_heuristics(bv):
+    # find state machines
+    find_state_machines(bv)
 
     # find complex functions
     find_complex_functions(bv)
@@ -140,7 +147,7 @@ def detect_obfuscation(bv):
     find_loop_frequency_functions(bv)
 
     # find functions with irreducible loops
-    find_irreducible_loops_bg(bv)
+    find_irreducible_loops(bv)
 
     # find functions with xor decryption loops
     find_xor_decryption_loops(bv)
@@ -149,7 +156,7 @@ def detect_obfuscation(bv):
     find_complex_arithmetic_expressions(bv)
 
     # find functions with duplicate subgraphs
-    find_duplicated_subraphs(bv)
+    find_duplicated_subgraphs(bv)
 
 
 # utils
@@ -190,7 +197,7 @@ def find_rc4_bg(bv):
     background_task.start()
 
 
-def run_utils_bg(bv):
+def run_utils(bv):
     # find entry functions
     find_entry_functions(bv)
 

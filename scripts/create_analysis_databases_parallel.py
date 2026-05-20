@@ -4,15 +4,14 @@ import sys
 import os
 import multiprocessing
 
-from binaryninja import BinaryViewType
+import binaryninja
 
 
 def analyze_file(file_path):
     print(f"Analyzing file {file_path}.")
 
     # analyze with binaryninja
-    bv = BinaryViewType.get_view_of_file(file_path)
-    bv.update_analysis_and_wait()
+    bv = binaryninja.load(file_path)
 
     # save analysis database in filesystem
     bv.create_database(f"{file_path}.bndb")

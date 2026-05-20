@@ -3,14 +3,14 @@ import argparse
 import json
 import sys
 
-from obfuscation_detection import run_heuristics_and_utils
-from obfuscation_detection.reports import collect_heuristics_and_utils_reports
+from obfuscation_detection.heuristics import find_state_machines
+from obfuscation_detection.reports import find_state_machine_reports
 
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(
         usage="%(prog)s [--json] <path to binary>",
-        description="Detect obfuscated code and interesting code constructs.",
+        description="Detect functions that look like state machines.",
     )
     parser.add_argument("--json", action="store_true", dest="json_output")
     parser.add_argument("file_name", nargs="?")
@@ -24,13 +24,19 @@ def load_binary(file_name):
 
 
 def run_text(bv):
-    run_heuristics_and_utils(bv)
+    find_state_machines(bv)
 
 
 def run_json(bv, file_name):
     return {
         "binary": file_name,
-        "detections": collect_heuristics_and_utils_reports(bv),
+        "heuristics": [
+            {
+                "id": "state_machine",
+                "name": "State Machine",
+                "findings": find_state_machine_reports(bv),
+            }
+        ],
     }
 
 

@@ -1,40 +1,75 @@
-from .helpers import calculate_entropy, find_rc4_ksa, find_rc4_prga, sort_elements
+from .helpers import (
+    calculate_entropy,
+    find_rc4_ksa,
+    find_rc4_prga,
+    sort_elements,
+)
+from .tagging import (
+    clear_heuristic_tags,
+    TAG_DESC_ENTRY_FUNCTION,
+    TAG_DESC_LEAF_FUNCTION,
+    TAG_DESC_RC4_KSA,
+    TAG_DESC_RC4_PRGA,
+    TAG_DESC_RECURSIVE_FUNCTION,
+    TAG_ENTRY_FUNCTION,
+    TAG_LEAF_FUNCTION,
+    TAG_RC4_KSA,
+    TAG_RC4_PRGA,
+    TAG_RECURSIVE_FUNCTION,
+    tag_function,
+)
 
 
 def find_entry_functions(bv):
     print("=" * 80)
-    print("Functions without callers:")
+    print("Entry Function")
+    clear_heuristic_tags(bv, TAG_ENTRY_FUNCTION)
 
     for f in bv.functions:
         if len(f.callers) != 0:
             continue
 
         print(f"Function {hex(f.start)} ({(f.name)}) has no known callers.")
+        tag_function(
+            bv,
+            f,
+            TAG_ENTRY_FUNCTION,
+            TAG_DESC_ENTRY_FUNCTION,
+        )
 
 
 def find_leaf_functions(bv):
     print("=" * 80)
-    print("Functions without callees:")
+    print("Leaf Function")
+    clear_heuristic_tags(bv, TAG_LEAF_FUNCTION)
 
     for f in bv.functions:
         # no callees and at least two instructions
         if len(f.callees) == 0 and sum(1 for _ in f.instructions) > 1:
             print(f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
+            tag_function(
+                bv,
+                f,
+                TAG_LEAF_FUNCTION,
+                TAG_DESC_LEAF_FUNCTION,
+            )
 
 
 def find_recursive_functions(bv):
     print("=" * 80)
-    print("Recursive functions:")
+    print("Recursive Function")
+    clear_heuristic_tags(bv, TAG_RECURSIVE_FUNCTION)
 
     for f in bv.functions:
         # no callees and at least two instructions
         if f in f.callees:
             print(f"Function {hex(f.start)} ({(f.name)}) is recursive.")
+            tag_function(bv, f, TAG_RECURSIVE_FUNCTION, TAG_DESC_RECURSIVE_FUNCTION)
 
 
 def compute_section_entropy(bv):
     print("=" * 80)
-    print("Sections and their entropy:")
+    print("Section Entropy")
 
     # compute section entropies
     section_entropies = {
@@ -49,10 +84,14 @@ def compute_section_entropy(bv):
 
 def find_rc4(bv):
     print("=" * 80)
-    print("Potential RC4 Implementations:")
+    print("RC4")
+    clear_heuristic_tags(bv, TAG_RC4_KSA)
+    clear_heuristic_tags(bv, TAG_RC4_PRGA)
 
     for f in bv.functions:
         if find_rc4_ksa(bv, f):
-            print(f"Function {f.name} ({hex(f.start)}) might implement RC4-KSA.")
+            print(f"Function {f.name} ({hex(f.start)}) might implement RC4 KSA.")
+            tag_function(bv, f, TAG_RC4_KSA, TAG_DESC_RC4_KSA)
         if find_rc4_prga(bv, f):
-            print(f"Function {f.name} ({hex(f.start)}) might implement RC4-PRGA.")
+            print(f"Function {f.name} ({hex(f.start)}) might implement RC4 PRGA.")
+            tag_function(bv, f, TAG_RC4_PRGA, TAG_DESC_RC4_PRGA)

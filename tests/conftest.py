@@ -14,7 +14,12 @@ def pytest_configure():
 
     binaryninja = types.ModuleType("binaryninja")
     binaryninja.highlevelil = types.SimpleNamespace(HighLevelILInstruction=object)
-    binaryninja.highlight = types.SimpleNamespace(HighlightColor=object)
+
+    class HighlightColor:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+    binaryninja.highlight = types.SimpleNamespace(HighlightColor=HighlightColor)
 
     enums = types.ModuleType("binaryninja.enums")
     plugin = types.ModuleType("binaryninja.plugin")
