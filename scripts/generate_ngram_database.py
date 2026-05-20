@@ -20,10 +20,14 @@ def analyze(binary_file_path):
     return calc_global_ngrams(bv, 3, use_llil=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # check file arguments
     if len(sys.argv) < 3:
-        print("[*] Syntax: {} <path to analysis directory> <output file>".format(sys.argv[0]))
+        print(
+            "[*] Syntax: {} <path to analysis directory> <output file>".format(
+                sys.argv[0]
+            )
+        )
         exit(0)
 
     # parse arguments
@@ -45,6 +49,6 @@ if __name__ == '__main__':
     output_string = pformat({k for k, v in ngrams.most_common(1000)})
 
     # write output file
-    with open(output_file_path, 'w') as output_file:
+    with open(output_file_path, "w") as output_file:
         output_file.write(output_string)
         output_file.close()

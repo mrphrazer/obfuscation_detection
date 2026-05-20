@@ -1,8 +1,20 @@
+from math import ceil
+
 from binaryninja import highlight
 
-from .helpers import *
-from .loop_analysis import (compute_irreducible_loops,
-                            compute_number_of_natural_loops)
+from .helpers import (
+    calc_average_instructions_per_block,
+    calc_cyclomatic_complexity,
+    calc_flattening_score,
+    calc_uncommon_instruction_sequences_score,
+    calculate_complex_arithmetic_expressions,
+    contains_xor_decryption_loop,
+    count_context_signature_duplicates,
+    find_rc4_ksa,
+    find_rc4_prga,
+    get_top_10_functions,
+)
+from .loop_analysis import compute_irreducible_loops, compute_number_of_natural_loops
 
 
 def find_flattened_functions(bv):
@@ -14,8 +26,7 @@ def find_flattened_functions(bv):
         # skip bad scores
         if score == 0.0:
             continue
-        print(
-            f"Function {hex(f.start)} ({f.name}) has a flattening score of {score}.")
+        print(f"Function {hex(f.start)} ({f.name}) has a flattening score of {score}.")
 
 
 def find_complex_functions(bv):
@@ -25,7 +36,8 @@ def find_complex_functions(bv):
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, calc_cyclomatic_complexity):
         print(
-            f"Function {hex(f.start)} ({f.name}) has a cyclomatic complexity of {score}.")
+            f"Function {hex(f.start)} ({f.name}) has a cyclomatic complexity of {score}."
+        )
 
 
 def find_large_basic_blocks(bv):
@@ -33,9 +45,12 @@ def find_large_basic_blocks(bv):
     print("Large Basic Blocks")
 
     # print top 10% (iterate in descending order)
-    for f, score in get_top_10_functions(bv.functions, calc_average_instructions_per_block):
+    for f, score in get_top_10_functions(
+        bv.functions, calc_average_instructions_per_block
+    ):
         print(
-            f"Basic blocks in function {hex(f.start)} ({f.name}) contain on average {ceil(score)} instructions.")
+            f"Basic blocks in function {hex(f.start)} ({f.name}) contain on average {ceil(score)} instructions."
+        )
 
 
 def find_duplicated_subraphs(bv):
@@ -43,10 +58,13 @@ def find_duplicated_subraphs(bv):
     print("Duplicate Subgraphs")
 
     # print top 10% (iterate in descending order)
-    for f, score in get_top_10_functions(bv.functions, count_context_signature_duplicates):
+    for f, score in get_top_10_functions(
+        bv.functions, count_context_signature_duplicates
+    ):
         if score != 0:
             print(
-                f"Function {hex(f.start)} ({f.name}) contains {score} duplicate subgraphs.")
+                f"Function {hex(f.start)} ({f.name}) contains {score} duplicate subgraphs."
+            )
 
 
 def find_instruction_overlapping(bv):
@@ -86,13 +104,15 @@ def find_instruction_overlapping(bv):
         for function in bv.get_functions_containing(address):
             # highlight overlapping instruction
             function.set_user_instr_highlight(
-                address, highlight.HighlightColor(red=0xff, blue=0xff, green=0))
+                address, highlight.HighlightColor(red=0xFF, blue=0xFF, green=0)
+            )
             # add to set of overlapping functions
             functions_with_overlapping.add(function.start)
 
     for address in sorted(functions_with_overlapping):
         print(
-            f"Overlapping instructions in function {hex(address)} ({bv.get_function_at(address).name}).")
+            f"Overlapping instructions in function {hex(address)} ({bv.get_function_at(address).name})."
+        )
 
 
 def find_uncommon_instruction_sequences(bv):
@@ -100,9 +120,12 @@ def find_uncommon_instruction_sequences(bv):
     print("Uncommon Instruction Sequences")
 
     # print top 10% (iterate in descending order)
-    for f, score in get_top_10_functions(bv.functions, calc_uncommon_instruction_sequences_score):
+    for f, score in get_top_10_functions(
+        bv.functions, calc_uncommon_instruction_sequences_score
+    ):
         print(
-            f"Function {hex(f.start)} ({f.name}) has an uncommon instruction sequences score of {score}.")
+            f"Function {hex(f.start)} ({f.name}) has an uncommon instruction sequences score of {score}."
+        )
 
 
 def find_most_called_functions(bv):
@@ -112,7 +135,8 @@ def find_most_called_functions(bv):
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, lambda f: len(f.callers)):
         print(
-            f"Function {hex(f.start)} ({f.name}) is called from {score} different functions.")
+            f"Function {hex(f.start)} ({f.name}) is called from {score} different functions."
+        )
 
 
 def find_xor_decryption_loops(bv):
@@ -122,7 +146,8 @@ def find_xor_decryption_loops(bv):
     for f in bv.functions:
         if contains_xor_decryption_loop(bv, f):
             print(
-                f"Function {hex(f.start)} ({f.name}) contains a XOR decryption loop with a constant.")
+                f"Function {hex(f.start)} ({f.name}) contains a XOR decryption loop with a constant."
+            )
 
 
 def find_complex_arithmetic_expressions(bv):
@@ -133,10 +158,13 @@ def find_complex_arithmetic_expressions(bv):
     print("=" * 80)
     print("Functions with complex arithmetic expressions:")
 
-    for f, score in get_top_10_functions(bv.functions, lambda f: calculate_complex_arithmetic_expressions(f)):
+    for f, score in get_top_10_functions(
+        bv.functions, lambda f: calculate_complex_arithmetic_expressions(f)
+    ):
         if score != 0:
             print(
-                f"Function {hex(f.start)} ({(f.name)}) has {score} instructions that use complex arithmetic expressions.")
+                f"Function {hex(f.start)} ({(f.name)}) has {score} instructions that use complex arithmetic expressions."
+            )
 
 
 def find_entry_functions(bv):
@@ -147,8 +175,7 @@ def find_entry_functions(bv):
         if len(f.callers) != 0:
             continue
 
-        print(
-            f"Function {hex(f.start)} ({(f.name)}) has no known callers.")
+        print(f"Function {hex(f.start)} ({(f.name)}) has no known callers.")
 
 
 def find_leaf_functions(bv):
@@ -158,8 +185,7 @@ def find_leaf_functions(bv):
     for f in bv.functions:
         # no callees and at least two instructions
         if len(f.callees) == 0 and sum(1 for _ in f.instructions) > 1:
-            print(
-                f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
+            print(f"Function {hex(f.start)} ({(f.name)}) has no known callees.")
 
 
 def find_rc4(bv):
@@ -168,11 +194,9 @@ def find_rc4(bv):
 
     for f in bv.functions:
         if find_rc4_ksa(bv, f):
-            print(
-                f"Function {f.name} ({hex(f.start)}) might implement RC4-KSA.")
+            print(f"Function {f.name} ({hex(f.start)}) might implement RC4-KSA.")
         if find_rc4_prga(bv, f):
-            print(
-                f"Function {f.name} ({hex(f.start)}) might implement RC4-PRGA.")
+            print(f"Function {f.name} ({hex(f.start)}) might implement RC4-PRGA.")
 
 
 def find_loop_frequency_functions(bv):
@@ -181,8 +205,7 @@ def find_loop_frequency_functions(bv):
 
     # print top 10% (iterate in descending order)
     for f, score in get_top_10_functions(bv.functions, compute_number_of_natural_loops):
-        print(
-            f"Function {hex(f.start)} ({f.name}) contains {score} loops.")
+        print(f"Function {hex(f.start)} ({f.name}) contains {score} loops.")
 
 
 def find_irreducible_loops(bv):
@@ -190,6 +213,8 @@ def find_irreducible_loops(bv):
     print("Irreducible Loops")
 
     # print top 10% (iterate in descending order)
-    for f, score in filter(lambda x: x[1] > 0, get_top_10_functions(bv.functions, lambda x: len(compute_irreducible_loops(x)))):
-        print(
-            f"Function {hex(f.start)} ({f.name}) contains {score} irreducible loops.")
+    for f, score in filter(
+        lambda x: x[1] > 0,
+        get_top_10_functions(bv.functions, lambda x: len(compute_irreducible_loops(x))),
+    ):
+        print(f"Function {hex(f.start)} ({f.name}) contains {score} irreducible loops.")
