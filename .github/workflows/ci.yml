@@ -19,8 +19,8 @@ jobs:
       - name: Install tooling
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          python -m pip install pytest ruff
-          python -m pip install -e .
+          python -m pip install build ruff twine
+          python -m pip install -e ".[test]"
 
       - name: Ruff format check
         run: ruff format --check .
@@ -29,7 +29,9 @@ jobs:
         run: ruff check .
 
       - name: Package metadata
-        run: python setup.py check --metadata --strict
+        run: |
+          python -m build --sdist --wheel
+          python -m twine check dist/*
 
       - name: Unit tests
         run: python -m pytest
