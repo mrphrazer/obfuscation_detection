@@ -1,9 +1,11 @@
 from .helpers import (
     calculate_entropy,
-    clear_heuristic_tags,
     find_rc4_ksa,
     find_rc4_prga,
     sort_elements,
+)
+from .tagging import (
+    clear_heuristic_tags,
     TAG_DESC_ENTRY_FUNCTION,
     TAG_DESC_LEAF_FUNCTION,
     TAG_DESC_RC4_KSA,

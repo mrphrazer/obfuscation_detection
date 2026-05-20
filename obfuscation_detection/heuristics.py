@@ -8,9 +8,13 @@ from .helpers import (
     calc_flattening_score,
     calc_uncommon_instruction_sequences_score,
     calculate_complex_arithmetic_expressions,
-    clear_heuristic_tags,
     contains_xor_decryption_loop,
     count_context_signature_duplicates,
+    get_top_10_functions,
+)
+from .loop_analysis import compute_irreducible_loops, compute_number_of_natural_loops
+from .tagging import (
+    clear_heuristic_tags,
     TAG_COMPLEX_ARITHMETIC_EXPRESSION,
     TAG_COMPLEX_FUNCTION,
     TAG_CONTROL_FLOW_FLATTENING,
@@ -33,10 +37,8 @@ from .helpers import (
     TAG_OVERLAPPING_INSTRUCTION,
     TAG_UNCOMMON_INSTRUCTION_SEQUENCE,
     TAG_XOR_DECRYPTION_LOOP,
-    get_top_10_functions,
     tag_function,
 )
-from .loop_analysis import compute_irreducible_loops, compute_number_of_natural_loops
 
 
 def function_finding(function, **fields):

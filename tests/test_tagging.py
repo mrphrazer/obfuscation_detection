@@ -4,7 +4,7 @@ import pytest
 
 import obfuscation_detection as plugin
 from obfuscation_detection import heuristics, utils
-from obfuscation_detection.helpers import (
+from obfuscation_detection.tagging import (
     clear_heuristic_tags,
     tag_function,
     TAG_COMPLEX_ARITHMETIC_EXPRESSION,
