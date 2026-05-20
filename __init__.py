@@ -96,7 +96,7 @@ PluginCommand.register(
 
 # Utils
 PluginCommand.register(
-    "Obfuscation Detection\\Utils\\All", "Runs all util funcitons", run_utils_bg
+    "Obfuscation Detection\\Utils\\All", "Runs all util functions", run_utils_bg
 )
 
 PluginCommand.register(

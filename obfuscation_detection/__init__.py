@@ -53,7 +53,7 @@ def find_large_basic_blocks_bg(bv):
 def find_uncommon_instruction_sequences_bg(bv):
     background_task = BGTask(
         bv,
-        "Finding uncomming instruction sequences",
+        "Finding uncommon instruction sequences",
         find_uncommon_instruction_sequences,
     )
     background_task.start()

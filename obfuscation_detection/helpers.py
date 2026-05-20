@@ -127,7 +127,7 @@ def contains_xor_decryption_loop(bv, function, xor_check=computes_xor_const):
 
 def find_rc4_ksa(bv, function):
     """
-    Tries to identify implementations of RC4's key scheduling algorihm (KSA)
+    Tries to identify implementations of RC4's key scheduling algorithm (KSA)
 
     It checks if a function
     - has at two loops
@@ -209,7 +209,7 @@ def get_llil_constants(llil_instr):
 
 
 def sliding_window(values, window_size):
-    # yiels all sliding windows of size `window_size` for a given list
+    # yields all sliding windows of size `window_size` for a given list
     for index in range(len(values) - window_size + 1):
         yield values[index : index + window_size]
 

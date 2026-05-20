@@ -58,7 +58,7 @@ def compute_strongly_connected_components(function):
 
     Iterative implementation of Gabow's path-based SCC algorithm.
 
-    Algorithm adapted from the miasm reverse enginerring framework:
+    Algorithm adapted from the miasm reverse engineering framework:
     https://github.com/cea-sec/miasm/blob/master/miasm/core/graph.py
     """
     stack = []
