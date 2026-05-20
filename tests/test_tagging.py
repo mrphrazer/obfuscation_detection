@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from types import SimpleNamespace
 
 import pytest
 
@@ -242,7 +243,83 @@ def test_utility_tags_are_applied(monkeypatch):
     assert functions[3].tags[TAG_RC4_PRGA] == [TAG_DESC_RC4_PRGA]
 
 
-def test_detect_obfuscation_calls_all_heuristics_synchronously(monkeypatch):
+def test_utility_reports_include_tag_metadata(monkeypatch):
+    recursive = FakeFunction(start=0x403000, name="recursive", callers=[object()])
+    recursive.callees.append(recursive)
+    functions = [
+        FakeFunction(start=0x401000, name="entry", callers=[], callees=[object()]),
+        FakeFunction(start=0x402000, name="leaf", callers=[object()]),
+        recursive,
+        FakeFunction(
+            start=0x404000, name="rc4", callers=[object()], callees=[object()]
+        ),
+    ]
+    bv = FakeBV(functions)
+    monkeypatch.setattr(
+        reports, "find_rc4_ksa", lambda _bv, function: function.name == "rc4"
+    )
+    monkeypatch.setattr(
+        reports, "find_rc4_prga", lambda _bv, function: function.name == "rc4"
+    )
+
+    assert reports.find_entry_function_reports(bv) == [
+        {
+            "address": "0x401000",
+            "name": "entry",
+            "tag_type": TAG_ENTRY_FUNCTION,
+            "description": TAG_DESC_ENTRY_FUNCTION,
+        }
+    ]
+    assert reports.find_leaf_function_reports(bv) == [
+        {
+            "address": "0x402000",
+            "name": "leaf",
+            "tag_type": TAG_LEAF_FUNCTION,
+            "description": TAG_DESC_LEAF_FUNCTION,
+        },
+    ]
+    assert reports.find_recursive_function_reports(bv) == [
+        {
+            "address": "0x403000",
+            "name": "recursive",
+            "tag_type": TAG_RECURSIVE_FUNCTION,
+            "description": TAG_DESC_RECURSIVE_FUNCTION,
+        }
+    ]
+    assert reports.find_rc4_reports(bv) == [
+        {
+            "address": "0x404000",
+            "name": "rc4",
+            "tag_type": TAG_RC4_KSA,
+            "description": TAG_DESC_RC4_KSA,
+        },
+        {
+            "address": "0x404000",
+            "name": "rc4",
+            "tag_type": TAG_RC4_PRGA,
+            "description": TAG_DESC_RC4_PRGA,
+        },
+    ]
+
+
+def test_section_entropy_reports_include_section_fields():
+    section = SimpleNamespace(name=".text", start=0x1000, length=4)
+    bv = SimpleNamespace(
+        sections={section.name: section},
+        read=lambda _start, _length: b"\x00\x00\x00\x00",
+    )
+
+    assert reports.find_section_entropy_reports(bv) == [
+        {
+            "address": "0x1000",
+            "name": ".text",
+            "length": 4,
+            "entropy": 0.0,
+        }
+    ]
+
+
+def test_run_heuristics_and_utils_calls_all_steps_synchronously(monkeypatch):
     calls = []
     expected_calls = [
         "find_flattened_functions",
@@ -256,6 +333,11 @@ def test_detect_obfuscation_calls_all_heuristics_synchronously(monkeypatch):
         "find_xor_decryption_loops",
         "find_complex_arithmetic_expressions",
         "find_duplicated_subgraphs",
+        "find_entry_functions",
+        "find_leaf_functions",
+        "find_recursive_functions",
+        "compute_section_entropy",
+        "find_rc4",
     ]
 
     for name in expected_calls:
@@ -263,9 +345,11 @@ def test_detect_obfuscation_calls_all_heuristics_synchronously(monkeypatch):
     monkeypatch.setattr(
         plugin,
         "find_irreducible_loops_bg",
-        lambda _bv: pytest.fail("detect_obfuscation should not start nested tasks"),
+        lambda _bv: pytest.fail(
+            "run_heuristics_and_utils should not start nested tasks"
+        ),
     )
 
-    plugin.detect_obfuscation(FakeBV([]))
+    plugin.run_heuristics_and_utils(FakeBV([]))
 
     assert calls == expected_calls

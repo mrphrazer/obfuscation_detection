@@ -5,9 +5,12 @@ from .helpers import (
     calc_cyclomatic_complexity,
     calc_flattening_score,
     calc_uncommon_instruction_sequences_score,
+    calculate_entropy,
     calculate_complex_arithmetic_expressions,
     contains_xor_decryption_loop,
     count_context_signature_duplicates,
+    find_rc4_ksa,
+    find_rc4_prga,
     get_top_10_functions,
 )
 from .loop_analysis import compute_irreducible_loops, compute_number_of_natural_loops
@@ -19,19 +22,29 @@ from .tagging import (
     TAG_DESC_COMPLEX_FUNCTION,
     TAG_DESC_CONTROL_FLOW_FLATTENING,
     TAG_DESC_DUPLICATE_SUBGRAPH,
+    TAG_DESC_ENTRY_FUNCTION,
     TAG_DESC_IRREDUCIBLE_LOOP,
     TAG_DESC_LARGE_BASIC_BLOCK,
+    TAG_DESC_LEAF_FUNCTION,
     TAG_DESC_LOOP_FREQUENCY,
     TAG_DESC_MOST_CALLED_FUNCTION,
     TAG_DESC_OVERLAPPING_INSTRUCTION,
+    TAG_DESC_RC4_KSA,
+    TAG_DESC_RC4_PRGA,
+    TAG_DESC_RECURSIVE_FUNCTION,
     TAG_DESC_UNCOMMON_INSTRUCTION_SEQUENCE,
     TAG_DESC_XOR_DECRYPTION_LOOP,
     TAG_DUPLICATE_SUBGRAPH,
+    TAG_ENTRY_FUNCTION,
     TAG_IRREDUCIBLE_LOOP,
     TAG_LARGE_BASIC_BLOCK,
+    TAG_LEAF_FUNCTION,
     TAG_LOOP_FREQUENCY,
     TAG_MOST_CALLED_FUNCTION,
     TAG_OVERLAPPING_INSTRUCTION,
+    TAG_RC4_KSA,
+    TAG_RC4_PRGA,
+    TAG_RECURSIVE_FUNCTION,
     TAG_UNCOMMON_INSTRUCTION_SEQUENCE,
     TAG_XOR_DECRYPTION_LOOP,
 )
@@ -46,6 +59,15 @@ def function_finding(function, tag_type, description, **fields):
     }
     finding.update(fields)
     return finding
+
+
+def section_finding(section, entropy):
+    return {
+        "name": section.name,
+        "address": hex(section.start),
+        "length": section.length,
+        "entropy": entropy,
+    }
 
 
 def get_function_for_finding(bv, finding):
@@ -234,7 +256,56 @@ def find_irreducible_loop_reports(bv):
     ]
 
 
-def collect_obfuscation_reports(bv):
+def find_entry_function_reports(bv):
+    return [
+        function_finding(f, TAG_ENTRY_FUNCTION, TAG_DESC_ENTRY_FUNCTION)
+        for f in bv.functions
+        if len(f.callers) == 0
+    ]
+
+
+def find_leaf_function_reports(bv):
+    return [
+        function_finding(f, TAG_LEAF_FUNCTION, TAG_DESC_LEAF_FUNCTION)
+        for f in bv.functions
+        if len(f.callees) == 0 and sum(1 for _ in f.instructions) > 1
+    ]
+
+
+def find_recursive_function_reports(bv):
+    return [
+        function_finding(f, TAG_RECURSIVE_FUNCTION, TAG_DESC_RECURSIVE_FUNCTION)
+        for f in bv.functions
+        if f in f.callees
+    ]
+
+
+def find_section_entropy_reports(bv):
+    section_entropies = [
+        (section, calculate_entropy(bv.read(section.start, section.length)))
+        for section in bv.sections.values()
+    ]
+    return [
+        section_finding(section, score)
+        for section, score in sorted(
+            section_entropies,
+            key=lambda section_entropy: section_entropy[1],
+            reverse=True,
+        )
+    ]
+
+
+def find_rc4_reports(bv):
+    reports = []
+    for f in bv.functions:
+        if find_rc4_ksa(bv, f):
+            reports.append(function_finding(f, TAG_RC4_KSA, TAG_DESC_RC4_KSA))
+        if find_rc4_prga(bv, f):
+            reports.append(function_finding(f, TAG_RC4_PRGA, TAG_DESC_RC4_PRGA))
+    return reports
+
+
+def collect_heuristics_and_utils_reports(bv):
     return [
         {
             "name": "Control Flow Flattening",
@@ -279,5 +350,25 @@ def collect_obfuscation_reports(bv):
         {
             "name": "Duplicate Subgraphs",
             "findings": find_duplicate_subgraph_reports(bv),
+        },
+        {
+            "name": "Entry Functions",
+            "findings": find_entry_function_reports(bv),
+        },
+        {
+            "name": "Leaf Functions",
+            "findings": find_leaf_function_reports(bv),
+        },
+        {
+            "name": "Recursive Functions",
+            "findings": find_recursive_function_reports(bv),
+        },
+        {
+            "name": "Section Entropy",
+            "findings": find_section_entropy_reports(bv),
+        },
+        {
+            "name": "RC4 Implementations",
+            "findings": find_rc4_reports(bv),
         },
     ]

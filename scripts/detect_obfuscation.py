@@ -3,8 +3,8 @@ import argparse
 import json
 import sys
 
-from obfuscation_detection import detect_obfuscation
-from obfuscation_detection.reports import collect_obfuscation_reports
+from obfuscation_detection import run_heuristics_and_utils
+from obfuscation_detection.reports import collect_heuristics_and_utils_reports
 
 
 def parse_args(argv):
@@ -24,13 +24,13 @@ def load_binary(file_name):
 
 
 def run_text(bv):
-    detect_obfuscation(bv)
+    run_heuristics_and_utils(bv)
 
 
 def run_json(bv, file_name):
     return {
         "binary": file_name,
-        "heuristics": collect_obfuscation_reports(bv),
+        "detections": collect_heuristics_and_utils_reports(bv),
     }
 
 

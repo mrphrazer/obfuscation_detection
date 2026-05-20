@@ -112,12 +112,21 @@ def find_duplicate_subgraphs_bg(bv):
     background_task.start()
 
 
-def detect_obfuscation_bg(bv):
-    background_task = BGTask(bv, "Detecting obfuscated functions", detect_obfuscation)
+def run_heuristics_and_utils_bg(bv):
+    background_task = BGTask(
+        bv,
+        "Running detection heuristics and utility detections",
+        run_heuristics_and_utils,
+    )
     background_task.start()
 
 
-def detect_obfuscation(bv):
+def run_heuristics_and_utils(bv):
+    run_heuristics(bv)
+    run_utils(bv)
+
+
+def run_heuristics(bv):
     # find flattened functions
     find_flattened_functions(bv)
 
@@ -152,7 +161,7 @@ def detect_obfuscation(bv):
     find_duplicated_subgraphs(bv)
 
 
-# utils
+# additional detections
 def find_entry_functions_bg(bv):
     background_task = BGTask(
         bv, "Finding functions without callers (entry functions)", find_entry_functions
@@ -190,7 +199,7 @@ def find_rc4_bg(bv):
     background_task.start()
 
 
-def run_utils_bg(bv):
+def run_utils(bv):
     # find entry functions
     find_entry_functions(bv)
 

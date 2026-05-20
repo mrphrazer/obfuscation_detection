@@ -189,9 +189,9 @@ The heuristic uses an iterative context-hashing approach to detect repeated mult
 * repeated cryptographic or checksumming stubs
 
 
-## Utils
+## Additional Detections
 
-Contrary to the detection heuristics which target a wider scope of code, the plugin also implements various helpers which aim to identify functions with a narrower scope. In the following, we describe these helpers and explain their characteristics.
+The plugin also includes narrower detections for interesting functions and code regions. The `All` command runs these detections together with the broader heuristics.
 
 
 ### Entry Functions
@@ -241,4 +241,3 @@ This helper detects potential RC4 algorithm implementations by employing heurist
 ## Contact
 
 For more information, contact [@mr_phrazer](https://twitter.com/mr_phrazer).
-

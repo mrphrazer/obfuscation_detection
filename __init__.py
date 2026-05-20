@@ -2,7 +2,6 @@ from binaryninja import PluginCommand
 
 from .obfuscation_detection import (
     # heuristics
-    detect_obfuscation_bg,
     find_complex_functions_bg,
     find_flattened_functions_bg,
     find_instruction_overlapping_bg,
@@ -14,8 +13,8 @@ from .obfuscation_detection import (
     find_loop_frequency_functions_bg,
     find_complex_arithmetic_expressions_bg,
     find_duplicate_subgraphs_bg,
-    # utils
-    run_utils_bg,
+    run_heuristics_and_utils_bg,
+    # additional detections
     find_entry_functions_bg,
     find_leaf_functions_bg,
     find_recursive_functions_bg,
@@ -25,7 +24,9 @@ from .obfuscation_detection import (
 
 # Heuristics
 PluginCommand.register(
-    "Obfuscation Detection\\All", "Runs all detection heuristics", detect_obfuscation_bg
+    "Obfuscation Detection\\All",
+    "Runs all detection heuristics and utility detections",
+    run_heuristics_and_utils_bg,
 )
 
 PluginCommand.register(
@@ -94,37 +95,32 @@ PluginCommand.register(
     find_duplicate_subgraphs_bg,
 )
 
-# Utils
 PluginCommand.register(
-    "Obfuscation Detection\\Utils\\All", "Runs all util functions", run_utils_bg
-)
-
-PluginCommand.register(
-    "Obfuscation Detection\\Utils\\Entry Functions",
+    "Obfuscation Detection\\Entry Functions",
     "Detects functions without callers",
     find_entry_functions_bg,
 )
 
 PluginCommand.register(
-    "Obfuscation Detection\\Utils\\Leaf Functions",
+    "Obfuscation Detection\\Leaf Functions",
     "Detects functions without callees",
     find_leaf_functions_bg,
 )
 
 PluginCommand.register(
-    "Obfuscation Detection\\Utils\\Recursive Functions",
+    "Obfuscation Detection\\Recursive Functions",
     "Detects recursive functions",
     find_recursive_functions_bg,
 )
 
 PluginCommand.register(
-    "Obfuscation Detection\\Utils\\Section Entropy",
+    "Obfuscation Detection\\Section Entropy",
     "Computes the entropy of all sections",
     compute_section_entropy_bg,
 )
 
 PluginCommand.register(
-    "Obfuscation Detection\\Utils\\RC4 Implementations",
+    "Obfuscation Detection\\RC4 Implementations",
     "Detects functions which potentially implement RC4 algorithms",
     find_rc4_bg,
 )

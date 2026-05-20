@@ -6,9 +6,11 @@ import scripts.detect_obfuscation as detect_obfuscation
 from obfuscation_detection.tagging import (
     TAG_COMPLEX_FUNCTION,
     TAG_CONTROL_FLOW_FLATTENING,
+    TAG_DESC_ENTRY_FUNCTION,
     TAG_DESC_COMPLEX_FUNCTION,
     TAG_DESC_CONTROL_FLOW_FLATTENING,
     TAG_DESC_XOR_DECRYPTION_LOOP,
+    TAG_ENTRY_FUNCTION,
     TAG_XOR_DECRYPTION_LOOP,
 )
 
@@ -20,7 +22,7 @@ class BinaryView:
 def test_detect_obfuscation_default_preserves_text_output(monkeypatch, capsys):
     bv = BinaryView()
 
-    def fake_detect_obfuscation(received_bv):
+    def fake_run_heuristics_and_utils(received_bv):
         assert received_bv is bv
         print("=" * 80)
         print("Cyclomatic Complexity")
@@ -28,7 +30,9 @@ def test_detect_obfuscation_default_preserves_text_output(monkeypatch, capsys):
 
     monkeypatch.setattr(detect_obfuscation, "load_binary", lambda file_name: bv)
     monkeypatch.setattr(
-        detect_obfuscation, "detect_obfuscation", fake_detect_obfuscation
+        detect_obfuscation,
+        "run_heuristics_and_utils",
+        fake_run_heuristics_and_utils,
     )
 
     assert detect_obfuscation.main(["sample.bin"]) == 0
@@ -44,7 +48,7 @@ def test_detect_obfuscation_default_preserves_text_output(monkeypatch, capsys):
 def test_detect_obfuscation_json_emits_sectioned_findings(monkeypatch, capsys):
     bv = BinaryView()
 
-    def fake_collect_obfuscation_reports(received_bv):
+    def fake_collect_heuristics_and_utils_reports(received_bv):
         assert received_bv is bv
         return [
             {
@@ -70,13 +74,24 @@ def test_detect_obfuscation_json_emits_sectioned_findings(monkeypatch, capsys):
                     }
                 ],
             },
+            {
+                "name": "Entry Functions",
+                "findings": [
+                    {
+                        "address": "0x3000",
+                        "name": "start",
+                        "tag_type": TAG_ENTRY_FUNCTION,
+                        "description": TAG_DESC_ENTRY_FUNCTION,
+                    }
+                ],
+            },
         ]
 
     monkeypatch.setattr(detect_obfuscation, "load_binary", lambda file_name: bv)
     monkeypatch.setattr(
         detect_obfuscation,
-        "collect_obfuscation_reports",
-        fake_collect_obfuscation_reports,
+        "collect_heuristics_and_utils_reports",
+        fake_collect_heuristics_and_utils_reports,
     )
 
     assert detect_obfuscation.main(["--json", "sample.bin"]) == 0
@@ -84,7 +99,7 @@ def test_detect_obfuscation_json_emits_sectioned_findings(monkeypatch, capsys):
     payload = json.loads(capsys.readouterr().out)
     assert payload == {
         "binary": "sample.bin",
-        "heuristics": [
+        "detections": [
             {
                 "name": "Cyclomatic Complexity",
                 "findings": [
@@ -105,6 +120,17 @@ def test_detect_obfuscation_json_emits_sectioned_findings(monkeypatch, capsys):
                         "description": TAG_DESC_XOR_DECRYPTION_LOOP,
                         "name": "decode",
                         "tag_type": TAG_XOR_DECRYPTION_LOOP,
+                    }
+                ],
+            },
+            {
+                "name": "Entry Functions",
+                "findings": [
+                    {
+                        "address": "0x3000",
+                        "description": TAG_DESC_ENTRY_FUNCTION,
+                        "name": "start",
+                        "tag_type": TAG_ENTRY_FUNCTION,
                     }
                 ],
             },
