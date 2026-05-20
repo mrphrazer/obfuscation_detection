@@ -3,7 +3,7 @@ from math import ceil
 from .helpers import (
     calc_average_instructions_per_block,
     calc_cyclomatic_complexity,
-    calc_flattening_score,
+    calc_state_machine_score,
     calc_uncommon_instruction_sequences_score,
     calculate_entropy,
     calculate_complex_arithmetic_expressions,
@@ -17,10 +17,10 @@ from .loop_analysis import compute_irreducible_loops, compute_number_of_natural_
 from .tagging import (
     TAG_COMPLEX_ARITHMETIC_EXPRESSION,
     TAG_COMPLEX_FUNCTION,
-    TAG_CONTROL_FLOW_FLATTENING,
+    TAG_STATE_MACHINE,
     TAG_DESC_COMPLEX_ARITHMETIC_EXPRESSION,
     TAG_DESC_COMPLEX_FUNCTION,
-    TAG_DESC_CONTROL_FLOW_FLATTENING,
+    TAG_DESC_STATE_MACHINE,
     TAG_DESC_DUPLICATE_SUBGRAPH,
     TAG_DESC_ENTRY_FUNCTION,
     TAG_DESC_IRREDUCIBLE_LOOP,
@@ -70,6 +70,14 @@ def section_finding(section, entropy):
     }
 
 
+def detection_section(detection_id, name, findings):
+    return {
+        "id": detection_id,
+        "name": name,
+        "findings": findings,
+    }
+
+
 def get_function_for_finding(bv, finding):
     return bv.get_function_at(int(finding["address"], 16))
 
@@ -103,16 +111,16 @@ def compute_overlapping_instruction_addresses(bv):
     return overlapping_addresses
 
 
-def find_flattened_function_reports(bv):
+def find_state_machine_reports(bv):
     reports = []
-    for f, score in get_top_10_functions(bv.functions, calc_flattening_score):
+    for f, score in get_top_10_functions(bv.functions, calc_state_machine_score):
         if score != 0.0:
             reports.append(
                 function_finding(
                     f,
-                    TAG_CONTROL_FLOW_FLATTENING,
-                    TAG_DESC_CONTROL_FLOW_FLATTENING.format(score=score),
-                    flattening_score=score,
+                    TAG_STATE_MACHINE,
+                    TAG_DESC_STATE_MACHINE.format(score=score),
+                    state_machine_score=score,
                 )
             )
     return reports
@@ -305,70 +313,85 @@ def find_rc4_reports(bv):
     return reports
 
 
+def find_rc4_ksa_reports(bv):
+    return [
+        function_finding(f, TAG_RC4_KSA, TAG_DESC_RC4_KSA)
+        for f in bv.functions
+        if find_rc4_ksa(bv, f)
+    ]
+
+
+def find_rc4_prga_reports(bv):
+    return [
+        function_finding(f, TAG_RC4_PRGA, TAG_DESC_RC4_PRGA)
+        for f in bv.functions
+        if find_rc4_prga(bv, f)
+    ]
+
+
 def collect_heuristics_and_utils_reports(bv):
     return [
-        {
-            "name": "Control Flow Flattening",
-            "findings": find_flattened_function_reports(bv),
-        },
-        {
-            "name": "Cyclomatic Complexity",
-            "findings": find_complex_function_reports(bv),
-        },
-        {
-            "name": "Large Basic Blocks",
-            "findings": find_large_basic_block_reports(bv),
-        },
-        {
-            "name": "Uncommon Instruction Sequences",
-            "findings": find_uncommon_instruction_sequence_reports(bv),
-        },
-        {
-            "name": "Instruction Overlapping",
-            "findings": find_instruction_overlapping_reports(bv),
-        },
-        {
-            "name": "Most Called Functions",
-            "findings": find_most_called_function_reports(bv),
-        },
-        {
-            "name": "Loop Frequency",
-            "findings": find_loop_frequency_reports(bv),
-        },
-        {
-            "name": "Irreducible Loops",
-            "findings": find_irreducible_loop_reports(bv),
-        },
-        {
-            "name": "XOR Decryption Loops",
-            "findings": find_xor_decryption_loop_reports(bv),
-        },
-        {
-            "name": "Functions with complex arithmetic expressions:",
-            "findings": find_complex_arithmetic_expression_reports(bv),
-        },
-        {
-            "name": "Duplicate Subgraphs",
-            "findings": find_duplicate_subgraph_reports(bv),
-        },
-        {
-            "name": "Entry Functions",
-            "findings": find_entry_function_reports(bv),
-        },
-        {
-            "name": "Leaf Functions",
-            "findings": find_leaf_function_reports(bv),
-        },
-        {
-            "name": "Recursive Functions",
-            "findings": find_recursive_function_reports(bv),
-        },
-        {
-            "name": "Section Entropy",
-            "findings": find_section_entropy_reports(bv),
-        },
-        {
-            "name": "RC4 Implementations",
-            "findings": find_rc4_reports(bv),
-        },
+        detection_section(
+            "state_machine", "State Machine", find_state_machine_reports(bv)
+        ),
+        detection_section(
+            "complex_function", "Complex Function", find_complex_function_reports(bv)
+        ),
+        detection_section(
+            "large_basic_block",
+            "Large Basic Block",
+            find_large_basic_block_reports(bv),
+        ),
+        detection_section(
+            "uncommon_instruction_sequence",
+            "Uncommon Instruction Sequence",
+            find_uncommon_instruction_sequence_reports(bv),
+        ),
+        detection_section(
+            "overlapping_instruction",
+            "Overlapping Instruction",
+            find_instruction_overlapping_reports(bv),
+        ),
+        detection_section(
+            "most_called_function",
+            "Most Called Function",
+            find_most_called_function_reports(bv),
+        ),
+        detection_section(
+            "loop_frequency", "Loop Frequency", find_loop_frequency_reports(bv)
+        ),
+        detection_section(
+            "irreducible_loop", "Irreducible Loop", find_irreducible_loop_reports(bv)
+        ),
+        detection_section(
+            "xor_decryption_loop",
+            "XOR Decryption Loop",
+            find_xor_decryption_loop_reports(bv),
+        ),
+        detection_section(
+            "complex_arithmetic_expression",
+            "Complex Arithmetic Expression",
+            find_complex_arithmetic_expression_reports(bv),
+        ),
+        detection_section(
+            "duplicate_subgraph",
+            "Duplicate Subgraph",
+            find_duplicate_subgraph_reports(bv),
+        ),
+        detection_section(
+            "entry_function", "Entry Function", find_entry_function_reports(bv)
+        ),
+        detection_section(
+            "leaf_function", "Leaf Function", find_leaf_function_reports(bv)
+        ),
+        detection_section(
+            "recursive_function",
+            "Recursive Function",
+            find_recursive_function_reports(bv),
+        ),
+        detection_section(
+            "section_entropy", "Section Entropy", find_section_entropy_reports(bv)
+        ),
+        detection_section("rc4_ksa", "RC4 KSA", find_rc4_ksa_reports(bv)),
+        detection_section("rc4_prga", "RC4 PRGA", find_rc4_prga_reports(bv)),
     ]

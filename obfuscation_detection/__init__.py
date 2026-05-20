@@ -4,7 +4,7 @@ from .heuristics import (
     find_complex_arithmetic_expressions,
     find_complex_functions,
     find_duplicated_subgraphs,
-    find_flattened_functions,
+    find_state_machines,
     find_instruction_overlapping,
     find_irreducible_loops,
     find_large_basic_blocks,
@@ -33,10 +33,8 @@ class BGTask(BackgroundTaskThread):
 
 
 # heuristics
-def find_flattened_functions_bg(bv):
-    background_task = BGTask(
-        bv, "Finding flattened functions", find_flattened_functions
-    )
+def find_state_machines_bg(bv):
+    background_task = BGTask(bv, "Finding state machines", find_state_machines)
     background_task.start()
 
 
@@ -127,8 +125,8 @@ def run_heuristics_and_utils(bv):
 
 
 def run_heuristics(bv):
-    # find flattened functions
-    find_flattened_functions(bv)
+    # find state machines
+    find_state_machines(bv)
 
     # find complex functions
     find_complex_functions(bv)

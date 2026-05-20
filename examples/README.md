@@ -11,7 +11,7 @@ In particular, the following samples `emotet`, `adylkuzz` and `plugx` are worth 
 
 ## Emotet
 
-`emotet` obfuscates its control-flow via control-flow flattening, which can be identified by the flattening heuristic. Furthermore, the heuristic for uncommon instruction sequences pinpoints functions which apply arithmetic encodings to the control-flow flattening states.
+`emotet` obfuscates its control flow via state machines, which can be identified by the state machine heuristic. Furthermore, the heuristic for uncommon instruction sequences pinpoints functions which apply arithmetic encodings to the state machine states.
 
 
 ## Adylkuzz
@@ -21,4 +21,4 @@ In particular, the following samples `emotet`, `adylkuzz` and `plugx` are worth 
 
 ## PlugX
 
-`plugx` is not obfuscated. However, the flattening heuristic can be used to identify the communication with the command and control server as well as command dispatching routines.
+`plugx` is not obfuscated. However, the state machine heuristic can be used to identify the communication with the command and control server as well as command dispatching routines.

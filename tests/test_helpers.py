@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from obfuscation_detection.helpers import (
     calc_average_instructions_per_block,
     calc_cyclomatic_complexity,
-    calc_flattening_score,
+    calc_state_machine_score,
     calculate_entropy,
     count_context_signature_duplicates,
     get_dominated_by,
@@ -67,7 +67,7 @@ def test_basic_graph_scoring_helpers():
     assert calc_average_instructions_per_block(function) == 4
 
 
-def test_flattening_score_uses_dominator_tree_and_back_edges():
+def test_state_machine_score_uses_dominator_tree_and_back_edges():
     dispatcher = Block("dispatcher")
     case_a = Block("case_a")
     case_b = Block("case_b")
@@ -82,7 +82,7 @@ def test_flattening_score_uses_dominator_tree_and_back_edges():
     function = Function([dispatcher, case_a, case_b, exit_block])
 
     assert get_dominated_by(dispatcher) == {dispatcher, case_a, case_b}
-    assert calc_flattening_score(function) == 0.75
+    assert calc_state_machine_score(function) == 0.75
 
 
 def test_context_signature_duplicate_count_detects_repeated_blocks():

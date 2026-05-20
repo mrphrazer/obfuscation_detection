@@ -5,7 +5,7 @@ from .reports import (
     find_complex_arithmetic_expression_reports,
     find_complex_function_reports,
     find_duplicate_subgraph_reports,
-    find_flattened_function_reports,
+    find_state_machine_reports,
     find_instruction_overlapping_reports,
     find_irreducible_loop_reports,
     find_large_basic_block_reports,
@@ -19,7 +19,7 @@ from .tagging import (
     clear_heuristic_tags,
     TAG_COMPLEX_ARITHMETIC_EXPRESSION,
     TAG_COMPLEX_FUNCTION,
-    TAG_CONTROL_FLOW_FLATTENING,
+    TAG_STATE_MACHINE,
     TAG_DUPLICATE_SUBGRAPH,
     TAG_IRREDUCIBLE_LOOP,
     TAG_LARGE_BASIC_BLOCK,
@@ -32,27 +32,29 @@ from .tagging import (
 )
 
 
-def find_flattened_functions(bv):
+def find_state_machines(bv):
     print("=" * 80)
-    print("Control Flow Flattening")
-    clear_heuristic_tags(bv, TAG_CONTROL_FLOW_FLATTENING)
+    print("State Machine")
+    clear_heuristic_tags(bv, TAG_STATE_MACHINE)
 
     # print top 10% (iterate in descending order)
-    for finding in find_flattened_function_reports(bv):
-        score = finding["flattening_score"]
+    for finding in find_state_machine_reports(bv):
+        score = finding["state_machine_score"]
         f = get_function_for_finding(bv, finding)
-        print(f"Function {hex(f.start)} ({f.name}) has a flattening score of {score}.")
+        print(
+            f"Function {hex(f.start)} ({f.name}) has a state machine score of {score}."
+        )
         tag_function(
             bv,
             f,
-            TAG_CONTROL_FLOW_FLATTENING,
+            TAG_STATE_MACHINE,
             finding["description"],
         )
 
 
 def find_complex_functions(bv):
     print("=" * 80)
-    print("Cyclomatic Complexity")
+    print("Complex Function")
     clear_heuristic_tags(bv, TAG_COMPLEX_FUNCTION)
 
     # print top 10% (iterate in descending order)
@@ -72,7 +74,7 @@ def find_complex_functions(bv):
 
 def find_large_basic_blocks(bv):
     print("=" * 80)
-    print("Large Basic Blocks")
+    print("Large Basic Block")
     clear_heuristic_tags(bv, TAG_LARGE_BASIC_BLOCK)
 
     # print top 10% (iterate in descending order)
@@ -92,7 +94,7 @@ def find_large_basic_blocks(bv):
 
 def find_duplicated_subgraphs(bv):
     print("=" * 80)
-    print("Duplicate Subgraphs")
+    print("Duplicate Subgraph")
     clear_heuristic_tags(bv, TAG_DUPLICATE_SUBGRAPH)
 
     # print top 10% (iterate in descending order)
@@ -112,7 +114,7 @@ def find_duplicated_subgraphs(bv):
 
 def find_instruction_overlapping(bv):
     print("=" * 80)
-    print("Instruction Overlapping")
+    print("Overlapping Instruction")
 
     # walk over all overlapping addresses
     for address in compute_overlapping_instruction_addresses(bv):
@@ -137,7 +139,7 @@ def find_instruction_overlapping(bv):
 
 def find_uncommon_instruction_sequences(bv):
     print("=" * 80)
-    print("Uncommon Instruction Sequences")
+    print("Uncommon Instruction Sequence")
     clear_heuristic_tags(bv, TAG_UNCOMMON_INSTRUCTION_SEQUENCE)
 
     # print top 10% (iterate in descending order)
@@ -157,7 +159,7 @@ def find_uncommon_instruction_sequences(bv):
 
 def find_most_called_functions(bv):
     print("=" * 80)
-    print("Most Called Functions")
+    print("Most Called Function")
     clear_heuristic_tags(bv, TAG_MOST_CALLED_FUNCTION)
 
     # print top 10% (iterate in descending order)
@@ -177,7 +179,7 @@ def find_most_called_functions(bv):
 
 def find_xor_decryption_loops(bv):
     print("=" * 80)
-    print("XOR Decryption Loops")
+    print("XOR Decryption Loop")
     clear_heuristic_tags(bv, TAG_XOR_DECRYPTION_LOOP)
 
     for finding in find_xor_decryption_loop_reports(bv):
@@ -199,7 +201,7 @@ def find_complex_arithmetic_expressions(bv):
     https://github.com/HexRaysSA/goomba
     """
     print("=" * 80)
-    print("Functions with complex arithmetic expressions:")
+    print("Complex Arithmetic Expression")
     clear_heuristic_tags(bv, TAG_COMPLEX_ARITHMETIC_EXPRESSION)
 
     for finding in find_complex_arithmetic_expression_reports(bv):
@@ -236,7 +238,7 @@ def find_loop_frequency_functions(bv):
 
 def find_irreducible_loops(bv):
     print("=" * 80)
-    print("Irreducible Loops")
+    print("Irreducible Loop")
     clear_heuristic_tags(bv, TAG_IRREDUCIBLE_LOOP)
 
     # print top 10% (iterate in descending order)

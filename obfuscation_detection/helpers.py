@@ -35,7 +35,7 @@ BOOLEAN_OPERATION = set(
 )
 
 
-def calc_flattening_score(function):
+def calc_state_machine_score(function):
     score = 0.0
     # 1: walk over all basic blocks
     for block in function.basic_blocks:

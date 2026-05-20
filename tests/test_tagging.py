@@ -10,10 +10,10 @@ from obfuscation_detection.tagging import (
     tag_function,
     TAG_COMPLEX_ARITHMETIC_EXPRESSION,
     TAG_COMPLEX_FUNCTION,
-    TAG_CONTROL_FLOW_FLATTENING,
+    TAG_STATE_MACHINE,
     TAG_DESC_COMPLEX_ARITHMETIC_EXPRESSION,
     TAG_DESC_COMPLEX_FUNCTION,
-    TAG_DESC_CONTROL_FLOW_FLATTENING,
+    TAG_DESC_STATE_MACHINE,
     TAG_DESC_DUPLICATE_SUBGRAPH,
     TAG_DESC_ENTRY_FUNCTION,
     TAG_DESC_IRREDUCIBLE_LOOP,
@@ -112,14 +112,39 @@ def test_clear_heuristic_tags_removes_only_matching_tag_type():
     assert second.tags == {}
 
 
+def test_clear_heuristic_tags_removes_legacy_tag_names():
+    function = FakeFunction(
+        tags={
+            TAG_STATE_MACHINE: ["new"],
+            "Heuristic: Control Flow Flattening": ["old"],
+            TAG_RC4_KSA: ["new"],
+            "Heuristic: RC4-KSA": ["old"],
+        }
+    )
+    bv = FakeBV(
+        [function],
+        tag_types={
+            TAG_STATE_MACHINE: object(),
+            "Heuristic: Control Flow Flattening": object(),
+            TAG_RC4_KSA: object(),
+            "Heuristic: RC4-KSA": object(),
+        },
+    )
+
+    clear_heuristic_tags(bv, TAG_STATE_MACHINE)
+    clear_heuristic_tags(bv, TAG_RC4_KSA)
+
+    assert function.tags == {}
+
+
 @pytest.mark.parametrize(
     ("finder", "score", "tag_type", "expected_data"),
     [
         (
-            heuristics.find_flattened_functions,
+            heuristics.find_state_machines,
             0.753,
-            TAG_CONTROL_FLOW_FLATTENING,
-            TAG_DESC_CONTROL_FLOW_FLATTENING.format(score=0.753),
+            TAG_STATE_MACHINE,
+            TAG_DESC_STATE_MACHINE.format(score=0.753),
         ),
         (
             heuristics.find_complex_functions,
@@ -322,7 +347,7 @@ def test_section_entropy_reports_include_section_fields():
 def test_run_heuristics_and_utils_calls_all_steps_synchronously(monkeypatch):
     calls = []
     expected_calls = [
-        "find_flattened_functions",
+        "find_state_machines",
         "find_complex_functions",
         "find_large_basic_blocks",
         "find_uncommon_instruction_sequences",

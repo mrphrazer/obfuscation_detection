@@ -17,7 +17,7 @@ Based on various heuristics, the plugin pinpoints functions that contain complex
 
 The following blog posts provide more information about the underlying heuristics and demonstrate their use cases:
 
-* [Automated Detection of Control-flow Flattening](https://synthesis.to/2021/03/03/flattening_detection.html)
+* [Automated Detection of State Machine-like Control Flow](https://synthesis.to/2021/03/03/flattening_detection.html)
 * [Automated Detection of Obfuscated Code](https://synthesis.to/2021/08/10/obfuscation_detection.html)
 * [Statistical Analysis to Detect Uncommon Code](https://synthesis.to//2023/01/26/uncommon_instruction_sequences.html)
 * [Identification of API Functions in Binaries](https://synthesis.to/2023/08/02/api_functions.html)
@@ -31,7 +31,7 @@ Some example use cases can be found in [examples](./examples). Furthermore, the 
 * highlights disaligned instructions in Binary Ninja's graph view
 * efficient and architecture-agnostic implementation
 * runs as a background task
-* automatically tags identified functions with the corresponding heuristic
+* automatically tags identified functions with the corresponding heuristic or utility
 * can be used in UI and headless mode
 
 
@@ -86,12 +86,12 @@ This runs all heuristics and all utilities. For machine-readable output, pass `-
 $ python3 scripts/detect_obfuscation.py --json <binary>
 ```
 
-The JSON payload contains all results under the `detections` key. Each tagged function finding includes the tag type and description used by the Binary Ninja plugin.
+The JSON payload contains all results under the `detections` key. Each detection has a stable `id` for automation and a human-readable `name`. Each tagged function finding includes the tag type and description used by the Binary Ninja plugin.
 
-To run only the control-flow flattening heuristic in headless mode, use [`scripts/detect_flattening.py`](scripts/detect_flattening.py):
+To run only the state machine heuristic in headless mode, use [`scripts/detect_state_machine.py`](scripts/detect_state_machine.py):
 
 ```
-$ python3 scripts/detect_flattening.py [--json] <binary>
+$ python3 scripts/detect_state_machine.py [--json] <binary>
 ```
 
 
@@ -99,7 +99,7 @@ $ python3 scripts/detect_flattening.py [--json] <binary>
 
 The plugin implements various detection heuristics to detect different code constructs. In the following, we briefly describe the individual heuristics and explain their usage. 
 
-### Large Basic Blocks
+### Large Basic Block
 
 The large basic block heuristic identifies the top 10% of functions with the largest average number of instructions per basic block. It allows to detect
 
@@ -108,18 +108,18 @@ The large basic block heuristic identifies the top 10% of functions with the lar
 * initialization routines
 * arithmetic obfuscation / Mixed Boolean-Arithmetic
 
-### Complex Functions
+### Complex Function
 
-To complex functions heuristic identifies the top 10% of functions with the most complex control-flow graphs (based on cyclomatic complexity). It allows to identify
+The complex function heuristic identifies the top 10% of functions with the most complex control-flow graphs (based on cyclomatic complexity). It allows to identify
 
 * complex dispatching routines and protocols
 * state machines
 * functions obfuscated with opaque predicates
 
 
-### Flattened Functions
+### State Machine
 
-The flattened function heuristic uses some graph-theoretic properties to identify functions implementing state machines. Usually, such state machines can be represented as switch statements that are dispatched in a loop. The heuristic allows to identify
+The state machine heuristic uses graph-theoretic properties to identify functions implementing state machines. Usually, such state machines can be represented as switch statements that are dispatched in a loop. The heuristic allows to identify
 
 * network protocol dispatching
 * file parsing logic
@@ -127,9 +127,9 @@ The flattened function heuristic uses some graph-theoretic properties to identif
 * control-flow flattening
 
 
-### Uncommon Instruction Sequences
+### Uncommon Instruction Sequence
 
-The uncommon instruction sequences heuristic performs a statistical analysis to identify the top 10% of functions whose code patterns deviate from a pre-computed ground truth. This way, the heuristic allows to identify
+The uncommon instruction sequence heuristic performs a statistical analysis to identify the top 10% of functions whose code patterns deviate from a pre-computed ground truth. This way, the heuristic allows to identify
 
 * cryptographic implementations
 * intense usage of floating point arithmetic
@@ -137,9 +137,9 @@ The uncommon instruction sequences heuristic performs a statistical analysis to 
 * generic obfuscation patterns
 
 
-### Instruction Overlapping
+### Overlapping Instruction
 
-The instruction overlapping heuristic identifies functions with disaligned instructions (instruction bytes are shared by two different instructions). The heuristic identifies
+The overlapping instruction heuristic identifies functions with disaligned instructions (instruction bytes are shared by two different instructions). The heuristic identifies
 
 * broken disassembly (e.g., data which is marked as code)
 * opaque predicates which jump into other instructions 
@@ -147,15 +147,15 @@ The instruction overlapping heuristic identifies functions with disaligned instr
 If the heuristic is used in Binary Ninja's user interface, overlapping instructions are also highlighted in the graph view.
 
 
-### Most Called Functions
+### Most Called Function
 
-The heuristic for most called functions identifies the top 10% of functions with the largest number of calls from different functions. This way, the heuristic can identify
+The most called function heuristic identifies the top 10% of functions with the largest number of calls from different functions. This way, the heuristic can identify
 
 * string decryption routines
 * library functions in statically linked binaries
 
 
-### High Loop Frequency
+### Loop Frequency
 
 The heuristic identifies functions with a high number of loops. These kind of functions might implement
 
@@ -165,7 +165,7 @@ The heuristic identifies functions with a high number of loops. These kind of fu
 The heuristic also helps pinpointing potential performance bottlenecks.
 
 
-### Irreducible Loops
+### Irreducible Loop
 
 The heuristic identifies functions with rare and complex loop structures that typically suggest
 
@@ -175,7 +175,7 @@ The heuristic identifies functions with rare and complex loop structures that ty
 * obfuscated code
 
 
-### XOR Decryption Loops
+### XOR Decryption Loop
 
 The heuristic identifies functions which perform an XOR operation with a constant inside of a loop. This way, the heuristic can identify
 
@@ -184,7 +184,7 @@ The heuristic identifies functions which perform an XOR operation with a constan
 * cryptographic implementations
 
 
-### Complex Arithmetic Expressions 
+### Complex Arithmetic Expression
 
 The heuristic identifies functions in which the expressions have more than one arithmetic operation and one boolean operation simultaneously. This way, the heuristic can identify
 
@@ -193,7 +193,7 @@ The heuristic identifies functions in which the expressions have more than one a
 * cryptographic implementations
 
 
-### Duplicate Subgraphs
+### Duplicate Subgraph
 
 The heuristic uses an iterative context-hashing approach to detect repeated multi-block structures within each function’s control-flow graph. By comparing each block’s opcode signature along with the signatures of its successors, the heuristic identifies subgraphs that are duplicated or near-duplicated in a single function. This helps pinpoint:
 
@@ -208,7 +208,7 @@ The heuristic uses an iterative context-hashing approach to detect repeated mult
 The plugin also includes narrower utilities for interesting functions and code regions. They remain available under the `Utils` submenu; the `All` command runs them together with the broader heuristics.
 
 
-### Entry Functions
+### Entry Function
 
 This helper identifies functions without known callers. These functions might be 
 
@@ -216,7 +216,7 @@ This helper identifies functions without known callers. These functions might be
 * indirect jumps targets where the call hierarchy could not be recovered by the disassembler
 
 
-### Leaf Functions
+### Leaf Function
 
 This helper identifies functions that do not call other functions. These kinds of functions may, for example, be functions that
 
@@ -225,7 +225,7 @@ This helper identifies functions that do not call other functions. These kinds o
 * are part of code obfuscation schemes (e.g., outlined computations for control-flow obfuscation)
 
 
-### Recursive Functions
+### Recursive Function
 
 This helper identifies recursive functions---functions that directly or indirectly call themselves. Recursive functions may indicate:
 
