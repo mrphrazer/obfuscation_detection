@@ -140,7 +140,7 @@ def detect_obfuscation(bv):
     find_loop_frequency_functions(bv)
 
     # find functions with irreducible loops
-    find_irreducible_loops_bg(bv)
+    find_irreducible_loops(bv)
 
     # find functions with xor decryption loops
     find_xor_decryption_loops(bv)

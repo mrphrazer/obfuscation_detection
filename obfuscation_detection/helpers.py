@@ -485,6 +485,23 @@ def sort_elements(iterator, scoring_function):
 # consistent icon for all heuristic tag types
 HEURISTIC_TAG_ICON = "🏷️"
 
+TAG_COMPLEX_ARITHMETIC_EXPRESSION = "Heuristic: Complex Arithmetic Expression"
+TAG_COMPLEX_FUNCTION = "Heuristic: Complex Function"
+TAG_CONTROL_FLOW_FLATTENING = "Heuristic: Control Flow Flattening"
+TAG_DUPLICATE_SUBGRAPH = "Heuristic: Duplicate Subgraph"
+TAG_ENTRY_FUNCTION = "Heuristic: Entry Function"
+TAG_IRREDUCIBLE_LOOP = "Heuristic: Irreducible Loop"
+TAG_LARGE_BASIC_BLOCK = "Heuristic: Large Basic Block"
+TAG_LEAF_FUNCTION = "Heuristic: Leaf Function"
+TAG_LOOP_FREQUENCY = "Heuristic: Loop Frequency"
+TAG_MOST_CALLED_FUNCTION = "Heuristic: Most Called Function"
+TAG_OVERLAPPING_INSTRUCTION = "Heuristic: Overlapping Instruction"
+TAG_RC4_KSA = "Heuristic: RC4-KSA"
+TAG_RC4_PRGA = "Heuristic: RC4-PRGA"
+TAG_RECURSIVE_FUNCTION = "Heuristic: Recursive Function"
+TAG_UNCOMMON_INSTRUCTION_SEQUENCE = "Heuristic: Uncommon Instruction Sequence"
+TAG_XOR_DECRYPTION_LOOP = "Heuristic: XOR Decryption Loop"
+
 
 def get_or_create_tag_type(bv, name):
     """Get existing tag type or create it."""

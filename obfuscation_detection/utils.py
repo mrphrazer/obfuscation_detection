@@ -4,6 +4,11 @@ from .helpers import (
     find_rc4_ksa,
     find_rc4_prga,
     sort_elements,
+    TAG_ENTRY_FUNCTION,
+    TAG_LEAF_FUNCTION,
+    TAG_RC4_KSA,
+    TAG_RC4_PRGA,
+    TAG_RECURSIVE_FUNCTION,
     tag_function,
 )
 
@@ -11,7 +16,7 @@ from .helpers import (
 def find_entry_functions(bv):
     print("=" * 80)
     print("Functions without callers:")
-    clear_heuristic_tags(bv, "Heuristic: Entry Function")
+    clear_heuristic_tags(bv, TAG_ENTRY_FUNCTION)
 
     for f in bv.functions:
         if len(f.callers) != 0:
@@ -21,7 +26,7 @@ def find_entry_functions(bv):
         tag_function(
             bv,
             f,
-            "Heuristic: Entry Function",
+            TAG_ENTRY_FUNCTION,
             "no known callers | may indicate: entry point, indirect jump target",
         )
 
@@ -29,7 +34,7 @@ def find_entry_functions(bv):
 def find_leaf_functions(bv):
     print("=" * 80)
     print("Functions without callees:")
-    clear_heuristic_tags(bv, "Heuristic: Leaf Function")
+    clear_heuristic_tags(bv, TAG_LEAF_FUNCTION)
 
     for f in bv.functions:
         # no callees and at least two instructions
@@ -38,7 +43,7 @@ def find_leaf_functions(bv):
             tag_function(
                 bv,
                 f,
-                "Heuristic: Leaf Function",
+                TAG_LEAF_FUNCTION,
                 "no known callees | may indicate: outlined functions, trampolines, obfuscation",
             )
 
@@ -46,15 +51,13 @@ def find_leaf_functions(bv):
 def find_recursive_functions(bv):
     print("=" * 80)
     print("Recursive functions:")
-    clear_heuristic_tags(bv, "Heuristic: Recursive Function")
+    clear_heuristic_tags(bv, TAG_RECURSIVE_FUNCTION)
 
     for f in bv.functions:
         # no callees and at least two instructions
         if f in f.callees:
             print(f"Function {hex(f.start)} ({(f.name)}) is recursive.")
-            tag_function(
-                bv, f, "Heuristic: Recursive Function", "potential self-recursive"
-            )
+            tag_function(bv, f, TAG_RECURSIVE_FUNCTION, "potential self-recursive")
 
 
 def compute_section_entropy(bv):
@@ -75,13 +78,13 @@ def compute_section_entropy(bv):
 def find_rc4(bv):
     print("=" * 80)
     print("Potential RC4 Implementations:")
-    clear_heuristic_tags(bv, "Heuristic: RC4-KSA")
-    clear_heuristic_tags(bv, "Heuristic: RC4-PRGA")
+    clear_heuristic_tags(bv, TAG_RC4_KSA)
+    clear_heuristic_tags(bv, TAG_RC4_PRGA)
 
     for f in bv.functions:
         if find_rc4_ksa(bv, f):
             print(f"Function {f.name} ({hex(f.start)}) might implement RC4-KSA.")
-            tag_function(bv, f, "Heuristic: RC4-KSA", "potential RC4 key scheduling")
+            tag_function(bv, f, TAG_RC4_KSA, "potential RC4 key scheduling")
         if find_rc4_prga(bv, f):
             print(f"Function {f.name} ({hex(f.start)}) might implement RC4-PRGA.")
-            tag_function(bv, f, "Heuristic: RC4-PRGA", "potential RC4 PRGA")
+            tag_function(bv, f, TAG_RC4_PRGA, "potential RC4 PRGA")
