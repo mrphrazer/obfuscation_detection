@@ -18,6 +18,9 @@ def compute_natural_loop_back_edges(function):
 
 
 def compute_natural_loop_body(back_edge):
+    if back_edge.source == back_edge.target:
+        return {back_edge.target}
+
     # initialize loop body
     loop_body = set([back_edge.target, back_edge.source])
     # initialize worklist

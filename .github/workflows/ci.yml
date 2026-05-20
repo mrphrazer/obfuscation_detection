@@ -19,7 +19,7 @@ jobs:
       - name: Install tooling
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install ruff
+          pip install pytest ruff
 
       - name: Ruff format check
         run: ruff format --check .
@@ -29,6 +29,9 @@ jobs:
 
       - name: Package metadata
         run: python setup.py check --metadata --strict
+
+      - name: Unit tests
+        run: pytest
 
       - name: Syntax check
         run: |
