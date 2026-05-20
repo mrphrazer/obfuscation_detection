@@ -18,6 +18,9 @@ def compute_natural_loop_back_edges(function):
 
 
 def compute_natural_loop_body(back_edge):
+    if back_edge.source == back_edge.target:
+        return {back_edge.target}
+
     # initialize loop body
     loop_body = set([back_edge.target, back_edge.source])
     # initialize worklist
@@ -37,15 +40,15 @@ def compute_natural_loop_body(back_edge):
 
 
 def compute_natural_loops(function):
-    return {back_edge: compute_natural_loop_body(back_edge)
-            for back_edge in compute_natural_loop_back_edges(function)}
+    return {
+        back_edge: compute_natural_loop_body(back_edge)
+        for back_edge in compute_natural_loop_back_edges(function)
+    }
 
 
 def compute_blocks_in_natural_loops(function):
     return reduce(
-        lambda x, y: x | y, (v for v in compute_natural_loops(
-            function).values()),
-        set()
+        lambda x, y: x | y, (v for v in compute_natural_loops(function).values()), set()
     )
 
 
@@ -55,7 +58,7 @@ def compute_strongly_connected_components(function):
 
     Iterative implementation of Gabow's path-based SCC algorithm.
 
-    Algorithm adapted from the miasm reverse enginerring framework: 
+    Algorithm adapted from the miasm reverse enginerring framework:
     https://github.com/cea-sec/miasm/blob/master/miasm/core/graph.py
     """
     stack = []
@@ -67,7 +70,7 @@ def compute_strongly_connected_components(function):
 
     # state machine for worklist algorithm
     VISIT, HANDLE_RECURSION, MERGE = 0, 1, 2
-    BlockState = namedtuple('BlockState', ['state', 'block'])
+    BlockState = namedtuple("BlockState", ["state", "block"])
 
     for block in function.basic_blocks:
         # next block if block was already visited
@@ -123,7 +126,9 @@ def compute_strongly_connected_components(function):
 
 def scc_is_loop(scc):
     # strongly connected component is loop if it contains more than one element or an back edge
-    return len(scc) > 1 or any(edge.target == block for block in scc for edge in block.outgoing_edges)
+    return len(scc) > 1 or any(
+        edge.target == block for block in scc for edge in block.outgoing_edges
+    )
 
 
 def compute_irreducible_loops(function):
@@ -131,6 +136,7 @@ def compute_irreducible_loops(function):
     blocks_in_natural_loops = compute_blocks_in_natural_loops(function)
     # if an scc is a loop and a block in scc is not part of a natural loop => irreducible loop
     return [
-        scc for scc in compute_strongly_connected_components(function)
+        scc
+        for scc in compute_strongly_connected_components(function)
         if scc_is_loop(scc) and not scc.issubset(blocks_in_natural_loops)
     ]

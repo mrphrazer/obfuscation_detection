@@ -1,7 +1,25 @@
 from binaryninja.plugin import BackgroundTaskThread
 
-from .heuristics import *
-from .utils import *
+from .heuristics import (
+    find_complex_arithmetic_expressions,
+    find_complex_functions,
+    find_duplicated_subgraphs,
+    find_flattened_functions,
+    find_instruction_overlapping,
+    find_irreducible_loops,
+    find_large_basic_blocks,
+    find_loop_frequency_functions,
+    find_most_called_functions,
+    find_uncommon_instruction_sequences,
+    find_xor_decryption_loops,
+)
+from .utils import (
+    compute_section_entropy,
+    find_entry_functions,
+    find_leaf_functions,
+    find_rc4,
+    find_recursive_functions,
+)
 
 
 class BGTask(BackgroundTaskThread):
@@ -17,73 +35,85 @@ class BGTask(BackgroundTaskThread):
 # heuristics
 def find_flattened_functions_bg(bv):
     background_task = BGTask(
-        bv, "Finding flattened functions", find_flattened_functions)
+        bv, "Finding flattened functions", find_flattened_functions
+    )
     background_task.start()
 
 
 def find_complex_functions_bg(bv):
-    background_task = BGTask(
-        bv, "Finding complex functions", find_complex_functions)
+    background_task = BGTask(bv, "Finding complex functions", find_complex_functions)
     background_task.start()
 
 
 def find_large_basic_blocks_bg(bv):
-    background_task = BGTask(
-        bv, "Finding large basic blocks", find_large_basic_blocks)
+    background_task = BGTask(bv, "Finding large basic blocks", find_large_basic_blocks)
     background_task.start()
 
 
 def find_uncommon_instruction_sequences_bg(bv):
     background_task = BGTask(
-        bv, "Finding uncomming instruction sequences", find_uncommon_instruction_sequences)
+        bv,
+        "Finding uncomming instruction sequences",
+        find_uncommon_instruction_sequences,
+    )
     background_task.start()
 
 
 def find_instruction_overlapping_bg(bv):
     background_task = BGTask(
-        bv, "Finding instruction overlapping", find_instruction_overlapping)
+        bv, "Finding instruction overlapping", find_instruction_overlapping
+    )
     background_task.start()
 
 
 def find_most_called_functions_bg(bv):
     background_task = BGTask(
-        bv, "Finding most called functions", find_most_called_functions)
+        bv, "Finding most called functions", find_most_called_functions
+    )
     background_task.start()
 
 
 def find_loop_frequency_functions_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions with a high loop frequency", find_loop_frequency_functions)
+        bv,
+        "Finding functions with a high loop frequency",
+        find_loop_frequency_functions,
+    )
     background_task.start()
 
 
 def find_irreducible_loops_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions with irreducible loops", find_irreducible_loops)
+        bv, "Finding functions with irreducible loops", find_irreducible_loops
+    )
     background_task.start()
 
 
 def find_xor_decryption_loops_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions with xor decryption loops", find_xor_decryption_loops)
+        bv, "Finding functions with xor decryption loops", find_xor_decryption_loops
+    )
     background_task.start()
 
 
 def find_complex_arithmetic_expressions_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions with complex arithmetic expressions", find_complex_arithmetic_expressions)
+        bv,
+        "Finding functions with complex arithmetic expressions",
+        find_complex_arithmetic_expressions,
+    )
     background_task.start()
 
 
 def find_duplicate_subgraphs_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions with duplicate subgraphs", find_duplicated_subgraphs)
+        bv, "Finding functions with duplicate subgraphs", find_duplicated_subgraphs
+    )
     background_task.start()
 
 
 def detect_obfuscation_bg(bv):
-    background_task = BGTask(
-        bv, "Detecting obfuscated functions", detect_obfuscation)
+    background_task = BGTask(bv, "Detecting obfuscated functions", detect_obfuscation)
     background_task.start()
 
 
@@ -116,7 +146,7 @@ def detect_obfuscation(bv):
     find_xor_decryption_loops(bv)
 
     # find expressions that include boolean and arithmetic operations
-    find_complex_arithmetic_expressions(bv),
+    find_complex_arithmetic_expressions(bv)
 
     # find functions with duplicate subgraphs
     find_duplicated_subgraphs(bv)
@@ -125,31 +155,38 @@ def detect_obfuscation(bv):
 # utils
 def find_entry_functions_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions without callers (entry functions)", find_entry_functions)
+        bv, "Finding functions without callers (entry functions)", find_entry_functions
+    )
     background_task.start()
 
 
 def find_leaf_functions_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions without callees (leaf functions)", find_leaf_functions)
+        bv, "Finding functions without callees (leaf functions)", find_leaf_functions
+    )
     background_task.start()
 
 
 def find_recursive_functions_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions with recursive calls (recursive functions)", find_recursive_functions)
+        bv,
+        "Finding functions with recursive calls (recursive functions)",
+        find_recursive_functions,
+    )
     background_task.start()
 
 
 def compute_section_entropy_bg(bv):
     background_task = BGTask(
-        bv, "Computing the entropy of all sections", compute_section_entropy)
+        bv, "Computing the entropy of all sections", compute_section_entropy
+    )
     background_task.start()
 
 
 def find_rc4_bg(bv):
     background_task = BGTask(
-        bv, "Finding functions which potentially implement RC4", find_rc4)
+        bv, "Finding functions which potentially implement RC4", find_rc4
+    )
     background_task.start()
 
 

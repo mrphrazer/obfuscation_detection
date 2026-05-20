@@ -22,7 +22,7 @@ def analyze_file(file_path):
     return file_path
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # check file arguments
     if len(sys.argv) < 2:
         print("[*] Syntax: {} <path to analysis directory>".format(sys.argv[0]))
@@ -33,5 +33,12 @@ if __name__ == '__main__':
 
     # analyze files in parallel
     with multiprocessing.Pool() as pool:
-        mapping = pool.map(analyze_file, [file_path for file_path in glob.glob(
-            f"{analysis_directory}/*") if not file_path.endswith(".bndb") and not os.path.exists(file_path + ".bndb")])
+        mapping = pool.map(
+            analyze_file,
+            [
+                file_path
+                for file_path in glob.glob(f"{analysis_directory}/*")
+                if not file_path.endswith(".bndb")
+                and not os.path.exists(file_path + ".bndb")
+            ],
+        )
