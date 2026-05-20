@@ -14,7 +14,7 @@ from .obfuscation_detection import (
     find_complex_arithmetic_expressions_bg,
     find_duplicate_subgraphs_bg,
     run_heuristics_and_utils_bg,
-    # additional detections
+    # utils
     find_entry_functions_bg,
     find_leaf_functions_bg,
     find_recursive_functions_bg,
@@ -96,31 +96,31 @@ PluginCommand.register(
 )
 
 PluginCommand.register(
-    "Obfuscation Detection\\Entry Functions",
+    "Obfuscation Detection\\Utils\\Entry Functions",
     "Detects functions without callers",
     find_entry_functions_bg,
 )
 
 PluginCommand.register(
-    "Obfuscation Detection\\Leaf Functions",
+    "Obfuscation Detection\\Utils\\Leaf Functions",
     "Detects functions without callees",
     find_leaf_functions_bg,
 )
 
 PluginCommand.register(
-    "Obfuscation Detection\\Recursive Functions",
+    "Obfuscation Detection\\Utils\\Recursive Functions",
     "Detects recursive functions",
     find_recursive_functions_bg,
 )
 
 PluginCommand.register(
-    "Obfuscation Detection\\Section Entropy",
+    "Obfuscation Detection\\Utils\\Section Entropy",
     "Computes the entropy of all sections",
     compute_section_entropy_bg,
 )
 
 PluginCommand.register(
-    "Obfuscation Detection\\RC4 Implementations",
+    "Obfuscation Detection\\Utils\\RC4 Implementations",
     "Detects functions which potentially implement RC4 algorithms",
     find_rc4_bg,
 )

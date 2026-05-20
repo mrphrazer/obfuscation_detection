@@ -161,7 +161,7 @@ def run_heuristics(bv):
     find_duplicated_subgraphs(bv)
 
 
-# additional detections
+# utils
 def find_entry_functions_bg(bv):
     background_task = BGTask(
         bv, "Finding functions without callers (entry functions)", find_entry_functions

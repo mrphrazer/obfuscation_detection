@@ -57,7 +57,7 @@ The plugin can be used in the user interface and in headless mode.
 
 ### User Interface
 
-Choose the index tab `Plugins -> Obfuscation Detection` to run one or more detection heuristics in Binary Ninja's user interface:
+Choose `Plugins -> Obfuscation Detection` to run individual heuristics, or `Plugins -> Obfuscation Detection -> Utils` to run individual utility detections. The `Plugins -> Obfuscation Detection -> All` command runs all heuristics and all utilities together.
 
 <p align="left">
 <img alt="Plugin Menu" src="imgs/plugin_menu.png" width="500"/>
@@ -78,6 +78,20 @@ To use the plugin in headless mode, run [`scripts/detect_obfuscation.py`](script
 
 ```
 $ python3 scripts/detect_obfuscation.py <binary>
+```
+
+This runs all heuristics and all utilities. For machine-readable output, pass `--json`:
+
+```
+$ python3 scripts/detect_obfuscation.py --json <binary>
+```
+
+The JSON payload contains all results under the `detections` key. Each tagged function finding includes the tag type and description used by the Binary Ninja plugin.
+
+To run only the control-flow flattening heuristic in headless mode, use [`scripts/detect_flattening.py`](scripts/detect_flattening.py):
+
+```
+$ python3 scripts/detect_flattening.py [--json] <binary>
 ```
 
 
@@ -189,9 +203,9 @@ The heuristic uses an iterative context-hashing approach to detect repeated mult
 * repeated cryptographic or checksumming stubs
 
 
-## Additional Detections
+## Utils
 
-The plugin also includes narrower detections for interesting functions and code regions. The `All` command runs these detections together with the broader heuristics.
+The plugin also includes narrower utilities for interesting functions and code regions. They remain available under the `Utils` submenu; the `All` command runs them together with the broader heuristics.
 
 
 ### Entry Functions
